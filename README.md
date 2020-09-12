@@ -43,6 +43,7 @@ DL4DistancePrediction4/ for contact/distance/orientation prediction, DL4Property
 ** Required external packages
 
 1) anaconda or miniconda for Python 2.7
+
 If you have not installed any anaconda or miniconda, you may directly install anaconda or miniconda for Python 2.7.
 If you have already installed anaconda/miniconda for Python 3, you may create a virtual enviroment RaptorX by running "conda create --name RaptorX python=2". 
 Afterwards, switch to this virtual environment to install the required packages and run RaptorX. 
@@ -51,6 +52,7 @@ Install numpy by "conda install numpy".
 Install msgpack-python by "conda install -c anaconda msgpack-python"; it may not work if you intall it through pip.
 
 2) Biopython (https://biopython.org/)
+
 Needed for both contact/distance/orientation predicton and 3D model building
 install by running "pip install biopython==1.76"
 A newer version of Biopython may not support Python 2.7.
@@ -58,10 +60,12 @@ A newer version of Biopython may not support Python 2.7.
 ** Required packages for contact/distance/orientation/angle prediction
 
 1) Pillow
+
 Needed for visualizing predicted contact and distance.
 install by running "pip install Pillow"
 
 2) pygpu and Theano 1.0 (http://deeplearning.net/software/theano/install.html)
+
 Needed for train and run deep learning models. 
 To install them, run "conda install numpy scipy mkl" and then "conda install theano pygpu" .
 
@@ -71,6 +75,7 @@ Make sure that the header and lib64 files of CUDNN are in CUDA_ROOT/include and 
 (Theano 1.0 works with CUDA 10.0 and cudnn 7.6. You may use other versions of CUDA and CUDNN for your own GPUs)
 
 3) shared_ndarray (https://github.com/crowsonkb/shared_ndarray.git)
+
 Needed for train and run deep learning models for distance/orientation prediction.
 Download this package by "git clone https://github.com/crowsonkb/shared_ndarray.git";
 cd to shared_ndarray/ and then run "python setup.py install".
@@ -80,11 +85,12 @@ cd to shared_ndarray/ and then run "python setup.py install".
 Note that HHblits (and its seq databases), uniref90 and metagenome database are already available on RX machines, no need to reinstall them to run RaptorX on these machines.
 
 1) Install HHblits for MSA generation (https://github.com/soedinglab/hh-suite)
-This package is needed for building MSAs.
+
 In addition to the HHsuite package itself, please also download a sequence database specific to HHsuite, 
 e.g. UniRef30_2020_03_hhsuite.tar.gz at http://wwwuser.gwdg.de/~compbiol/uniclust/2020_03/
 
 2) Install EVcouplings for generating MSAs by jackhmmer (optional, but not recommended since it is too slow)
+
 It is available at https://github.com/debbiemarkslab/EVcouplings . Although the whole package is installed, only the MSA generation module will be used.
 Step 1: Download the package by running "git clone https://github.com/debbiemarkslab/EVcouplings.git". Suppose that it is located at $HOME/EVcouplings. 
 Step 2: Run "conda create -n evfold anaconda python=3" to create a virtual environment and then switch to this environment by running "conda activate evfold".
@@ -95,6 +101,7 @@ Without jackhmmer, you may still run RaptorX by generating MSAs using HHblits on
 The sequence database for jackhmmer is uniref90.fasta, which can be downloaded from UniProt.
 
 3) Metagenome data (optional)
+
 Download the data file metaclust_50.fasta at https://metaclust.mmseqs.org/current_release/ and install it somewhere.
 
 4) Revise the file RaptorX-3DModeling/raptorx-external.sh to setup the path information for the above MSA building tools and databases.
@@ -102,11 +109,13 @@ Download the data file metaclust_50.fasta at https://metaclust.mmseqs.org/curren
 ** Required packages for building protein 3D models
 
 1) PyRosetta (http://www.pyrosetta.org/dow)
+
 Needed to fold a protein sequence from predicted distance/orientation and phi/psi angles.
 Please download the version supporting Python 2.7.
 Afterwards, cd to PyRosetta4.Release.python27.linux.release-224/setup/ and run "python setup.py install" where PyRosetta4.Release.python27.linux.release-224 is the folder of the unpacked package.
 
 2) GNU parallel (optional, but recommended for running folding jobs on a Linux workstation)
+
 Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.sh and SRunFoldNRelaxOneTarget.sh) use GNU parallel to run multiple folding jobs on one or multiple computers.
 Run "which parallel" to see if GNU parallel is available or not.
 If GNU parallel cannot be installed, you may still run folding jobs using other scripts.
@@ -132,14 +141,19 @@ Supposing that the RaptorX-3DModeling package is located at $HOME/RaptorX-3DMode
 below is an example configuration that can be pasted to the .bashrc file if you are using the bash shell.
 
 export ModelingHome=$HOME/RaptorX-3DModeling/
+
 . $ModelingHome/raptorx-external.sh
 
 export DistFeatureHome=$ModelingHome/BuildFeatures/
+
 export DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/
+
 export DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/
+
 export DistanceFoldingHome=$ModelingHome/Folding/
 
 export PYTHONPATH=$ModelingHome:$PYTHONPATH
+
 export PATH=$ModelingHome/bin:$PATH
 
 export CUDA_ROOT=/usr/local/cuda/
@@ -160,7 +174,9 @@ In the input file, an amino acid shall be represented by a capital letter instea
 Run RaptorXFolder.sh (and other shell scripts in this package) without any arguments will show its help information. Below are some scenarios.
 
 1) When you already have a multiple sequence alignment in a3m format, please use option "-m 0";
+
 2) When you only want to predict angle/contact/distance/orientation but not 3D models, please use option "-n 0";
+
 3) When you do not want to generate MSAs using jackhmmer, you may use option "-m 9" (without using metagenome data) or "-m 25" (using metagenome data). 
 Note that jackhmmer usually is slow, so it is not recommended for MSA generation.
 
@@ -175,11 +191,17 @@ For a protein of >1000 residues, it may need >12G GPU memory to predict distance
 
 
 All the result files are saved to a folder target_OUT/ where target is the protein name containing the following subfolders:
+
 1) target_contact/ contains MSAs and input features for distance/orientation prediction;
+
 2) target_thread contains files for Phi/Psi prediction (which are also used for threading);
+
 3) DistancePred/ contains predicted distance/orientation/contact and their visualization;
+
 4) PropertyPred/ contains predicted Phi/Psi angles and secondary structure;
+
 5) target-RelaxResults/ contains all generated decoys;
+
 6) target-SpickerResults/ contains the clustering results of the decoys.
 
 It is possible to run RaptorXFolder.sh on several machines, each in charge of one major module (MSA generation, feature generation and distance/orientation prediction, 3D model building),
@@ -188,8 +210,11 @@ without requiring you to manually copy data among different machines. This will 
 ## References
 
 1. Distance-based protein folding powered by deep learning. PNAS, August 2019. A 2-page abstract also appeared at RECOMB2019 in April 2019.
+
 2. Analysis of distance-based protein structure prediction by deep learning in CASP13. PROTEINS, 2019.
+
 3. Accurate De Novo Prediction of Protein Contact Map by Ultra-Deep Learning Model. PLoS CB, Jan 2017
+
 4. Folding Membrane Proteins by Deep Transfer Learning. Cell Systems, September 2017.
 
 ## Detailed Usage
@@ -243,7 +268,6 @@ and then DL4DistancePrediction4/Scripts/PredictPairwiseRelation4Proteins.sh
 
 Note that the input feature files generated by GenDistFeaturesFromMSAs.sh and BatchGenDistFeaturesFromMSAs.sh and the predicted distance/orientation file may be very large for a large protein.
 To save disk space, please avoid generating input feature files or predicting distance/orientation for too many proteins in a batch.
-
 
 ** How to predict protein local structure properties such as Phi/Psi angles and secondary structure
 
