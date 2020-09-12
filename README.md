@@ -290,8 +290,8 @@ To fullfil this, you shall install and configure this RaptorX package (or a port
 on the 2nd one you can run GPU tasks (e.g., CCMpred and distance/orientation prediction) and on the 3rd one you may run 3D model building. 
 
 To run GPU tasks at a remote machine, please create one file (e.g., GPUMachines.txt) to specify the remote machines with GPUs and to which you may ssh/scp/rsync without password. 
-See an example file in RaptorX-3DModeling/params/. A line in this file looks like "raptorx9.uchicago.edu LargeRAM on" or "raptorx5.uchicago.edu SmallRAM off" 
-where the three fields are the computer name, GPUs of a small RAM (<=12G) or a large RAM, and enabled/disabled, respectively.
+See an example file in RaptorX-3DModeling/params/. A line in this file looks like "raptorx9.uchicago.edu LargeRAM on" or "jinbo@aptorx7.uchicago.edu SmallRAM off" 
+where the three fields are the computer name (and account name if needed), GPUs of a small RAM (<=12G) or a large RAM, and enabled/disabled, respectively.
 You may save this file at a default location (i.e., RaptorX-3DModeling/params/GPUMachines.txt) or other places. 
 
 Note that once RaptorX-3DModeling/params/GPUMachines.txt exists, in order to use your local GPUs, you shall add one line to this file for your local GPUs, e.g., "name-of-your-local-machine SmallRAM on" or "name-of-your-local-machine LargeRAM on".
