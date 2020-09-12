@@ -68,7 +68,7 @@ function Usage()
 	echo "		2 for a slurm cluster with homogenous nodes, 3 for a slurm cluster with hetergenous nodes and 4 for a multi-CPU Linux computer without GNU parallel installed"
 }
 
-while getopts ":o:g:m:n:r:R:t:" opt; do
+while getopts ":o:g:m:n:r:R:t:l:" opt; do
         case ${opt} in
                 o )
                   outDir=$OPTARG
@@ -90,6 +90,9 @@ while getopts ":o:g:m:n:r:R:t:" opt; do
 		  ;;
 		t )
 		  machineType=$OPTARG
+		  ;;
+		l )
+		  maxLen2BeFolded=$OPTARG
 		  ;;
                 \? )
                   echo "Invalid Option: -$OPTARG" 1>&2
