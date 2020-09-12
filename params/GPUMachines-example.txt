@@ -1,7 +1,7 @@
 raptorx9.uchicago.edu LargeRAM on
 raptorx8.uchicago.edu LargeRAM on
 raptorx7.uchicago.edu LargeRAM on
-raptorx7.uchicago.edu SmallRAM off
+jinbo@raptorx7.uchicago.edu SmallRAM off
 raptorx6.uchicago.edu SmallRAM off
 raptorx5.uchicago.edu SmallRAM off
 raptorx4.uchicago.edu SmallRAM off
