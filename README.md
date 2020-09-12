@@ -55,9 +55,8 @@ Install msgpack-python by "conda install -c anaconda msgpack-python"; it may not
 
 2) Biopython (https://biopython.org/)
 
-Needed for both contact/distance/orientation predicton and 3D model building
-install by running "pip install biopython==1.76"
-A newer version of Biopython may not support Python 2.7.
+Needed for both contact/distance/orientation predicton and 3D model building.
+Install by running "pip install biopython==1.76". Note that a newer version may not work with Python 2.7.
 
 ## Required packages for contact/distance/orientation/angle prediction ##
 
