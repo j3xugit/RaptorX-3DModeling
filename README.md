@@ -273,7 +273,7 @@ To save disk space, please avoid generating input feature files or predicting di
 Several scripts in /home/jinbo/RaptorX-3DModeling/DL4PropertyPrediction/Scripts/ can be used, e.g., PredictPropertyFromMSA.sh, PredictPropertyFromHHMs.sh, PredictProperty4OneProtein.sh and PredictProperty4Proteins.sh
 Some scripts such as PredictPropertyRemote.sh and PredictProperty4Server.sh may run on a remote computer with GPUs and to which you may ssh without password.
 
-** How to build 3D models from predicted angle/distance/orientation files
+* How to build 3D models from predicted angle/distance/orientation files
 
 1) To fold a protein from its primary sequence or an MSA without manually run the intermediate steps, you may run RaptorX-3DModeling/Server/RaptorXFolder.sh
 
