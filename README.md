@@ -54,11 +54,13 @@ Afterwards, switch to this virtual environment by command "conda activate Raptor
 See https://docs.python.org/3/tutorial/venv.html for the introduction of virtual environment.
 
 Install numpy by "conda install numpy".
+
 Install msgpack-python by "conda install -c anaconda msgpack-python"; it may not work if you intall it through pip.
 
 2) Biopython (https://biopython.org/)
 
 Needed for both contact/distance/orientation predicton and 3D model building.
+
 Install by running "pip install biopython==1.76". Note that a newer version may not work with Python 2.7.
 
 ## Required packages for contact/distance/orientation/angle prediction ##
@@ -79,6 +81,7 @@ Make sure that the header and lib64 files of CUDNN are in CUDA_ROOT/include and 
 3) shared_ndarray (https://github.com/crowsonkb/shared_ndarray.git)
 
 Needed for train and run deep learning models for distance/orientation prediction.
+
 Download by "git clone https://github.com/crowsonkb/shared_ndarray.git";
 cd to shared_ndarray/ and then run "python setup.py install".
 
@@ -107,7 +110,7 @@ The sequence database for jackhmmer is uniref90.fasta, which can be downloaded f
 
 Download the data file metaclust_50.fasta at https://metaclust.mmseqs.org/current_release/ and install it somewhere.
 
-4) Revise the file RaptorX-3DModeling/raptorx-external.sh to setup the path information for the above MSA building tools and databases.
+4) (IMPORTANT) Revise the file RaptorX-3DModeling/raptorx-external.sh to setup the path information for the above MSA building tools and databases.
 
 ## Required packages for building protein 3D models ##
 
