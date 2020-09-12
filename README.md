@@ -291,7 +291,7 @@ In aptorX-3DModeling/Folding/Scripts4Rosetta/, there are FoldNRelaxOneTarget.sh,
 Suppose that you have access to three machines: the 1st one has a small number of CPUs but not any GPUs, the 2nd one has GPUs but very few CPUs, and the third one has many CPUs but not GPUs. 
 You may start RaptorXFolder.sh on the 1st machine, which will then automatically run GPU tasks on the 2nd machine and the folding tasks on the 3rd machine. 
 During this process, you do not need to manually copy files and results among machines. 
-To fullfil this, you shall install this RaptorX package (or a portion of it) on the three machines so that on the 1st one you may run MSA generation,
+To fullfil this, you shall install and configure this RaptorX package (or a portion of it) on the three machines so that on the 1st one you may run MSA generation,
 on the 2nd one you can run GPU tasks (e.g., CCMpred and distance/orientation prediction) and on the 3rd one you may run 3D model building. 
 
 To run GPU tasks at a remote machine, please create one file (e.g., GPUMachines.txt) to specify the remote machines with GPUs and to which you may ssh/scp/rsync without password. 
