@@ -51,7 +51,7 @@ To predict contact/distance/orientation and fold a protein, you may simply run R
 If you have not installed any anaconda or miniconda, you may directly install anaconda or miniconda for Python 2.7.
 If you have already installed anaconda/miniconda for Python 3, you may create a virtual enviroment RaptorX by running "conda create --name RaptorX python=2". 
 Afterwards, switch to this virtual environment by command "conda activate RaptorX" to install the required packages and run RaptorX. 
-See https://docs.python.org/3/tutorial/venv.html for the introduction of virtual environment.
+See https://docs.python.org/3/tutorial/venv.html for an introduction of virtual environment.
 
 Install numpy by "conda install numpy".
 
