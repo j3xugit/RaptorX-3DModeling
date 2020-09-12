@@ -1,0 +1,14 @@
+-in:file:fasta SeqFile             
+-in:file:frag3 FragDir/TARGET.200.3mers
+-in:file:frag9 FragDir/TARGET.200.9mers
+-database  /mnt/data/RaptorXCommon/Rosetta_Package/rosetta_bin_linux_2018.48.60516_bundle/main/database/                                    
+-nstruct 20                                       
+-out:pdb true
+-out:path OutDir
+-out:file:silent SilentFile
+-out:file:scorefile ScoreFile
+-abinitio:increase_cycles 2
+-constraints:cst_weight 1.0
+-constraints:cst_fa_weight 1.0
+-constraints:cst_file CstFile
+-constraints:cst_fa_file CstFile

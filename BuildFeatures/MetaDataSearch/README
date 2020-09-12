@@ -1,0 +1,19 @@
+#=================
+# running example:
+#=================
+
+./AddiA3M_Gen.sh -i example/T0990-D3.seq -I example/T0990-D3.a3m
+
+
+#---------- database download ------------#
+The metagenomics sequence database could be downloaded from the link below:
+wget -q https://metaclust.mmseqs.org/current_release/metaclust_50.fasta.gz
+
+#---------- HMMER download ---------------#
+The HMMER executable files in bin/ could be downloaded from the link below:
+wget -q http://eddylab.org/software/hmmer/hmmer.tar.gz
+
+#---------- cdhit download ---------------#
+The cdhit executable file in bin/ could be git clone from the link below:
+git clone https://github.com/weizhongli/cdhit
+

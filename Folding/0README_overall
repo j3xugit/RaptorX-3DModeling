@@ -1,0 +1,46 @@
+-----------------------------------------------------------------
+Explanation for seqid.all_in_one.zip
+In this package, except image files and .pkl files, all the other files are in plain text format.
+-----------------------------------------------------------------
+
+0README_overall       : This README file
+
+seqid		      : the ID assigned by the server to the query sequence
+
+seqid.fasta           : the user input sequence in FASTA format
+
+seqid.a2m             : Multiple Sequence Alignment (MSA) in A2M format
+seqid.a3m             : Multiple Sequence Alignment (MSA) in A3M format
+
+seqid.predictedDistMatrix.pkl	: this file contains predicted contact/distance/orientation information. It is a tuple of 6 items and the first 4 items are seqName, primarySeq, predicted distance/orientation prob matrix, predicted contact matrix.
+			The 3rd and 4th items are python dictionary with keys like 'CbCb', 'NO', 'CaCa'. With key 'CbCb', you may obtain the predicted Cb-Cb distance probability matrix in the 3rd item and the predicted Cb-Cb contact probability matrix in the 4th item. 
+		        The 3rd item also has predicted probability matrix for inter-residue orientation.
+
+seqid.gcnn	      : predicted contact matrix in text format
+
+seqid.rr	      : predicted contact file in the CASP format
+
+seqid.png and seqid_[1/2/3/4/5].png            : image files for the predicted contact matrix
+seqid_dist.png and seqid_[1/2/3/4/5]_dist.png  : image files for the predicted distance matrix
+
+seqid.pairPotential.DFIRE16.pkl: distance potential used by our new threading program DeepThreader and model quality assessment software ResNetQA. This potential is not used for folding, though.
+seqid.epad_prob:	distance probability used by our old threading program DeepThreader
+
+models/               : The folder contains the predicted five 3D models.
+  0README             : a README file
+
+  seqid_model_X.pdb   : The predicted models in PDB format, where X ranges from 1 to 5.
+
+  seqid.model_summary : The file contains estimated RMSD in Angstrom of the predicted 3D models. This RMSD is not very accurate for a multi-domain protein.
+
+  seqid_modelX.localQuality.txt	: the file contains estimated local distance deviation. Again, it is not very accurate for a multi-domain protein.
+
+
+
+For method details, please consult Dr. Jinbo Xu @ jinboxu@gmail.com or read the following papers:
+
+1. Jinbo Xu. Distance-based protein folding powered by deep learning. PNAS, 2019.
+2. Sheng Wang, Siqi Sun, Zhen Li, Renyu Zhang and Jinbo Xu. Accurate De Novo Prediction of Protein Contact Map by Ultra-Deep Learning Model. PLoS Computational Biology, 2017.
+3. Sheng Wang, Zhen Li, Yizhou Yu and Jinbo Xu. Folding Membrane Proteins by Deep Transfer Learning. Cell Systems, 2017
+4. Jinbo Xu and Sheng Wang. Analysis of distance-based protein structure prediction by deep learning in CASP13. PROTEINS, 2019.
+5. Sheng Wang, Siqi Sun and Jinbo Xu. Analysis of deep learning methods for blind protein contact prediction in CASP12. PROTEINS, 2017

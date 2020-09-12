@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -O3 -g -lm   CMakeFiles/rosenbrock.dir/samples/rosenbrock.c.o  -o bin/rosenbrock -rdynamic libconjugrad.a 

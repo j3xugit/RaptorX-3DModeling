@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -O3 -g -lm   CMakeFiles/polynomial.dir/samples/polynomial.c.o  -o bin/polynomial -rdynamic libconjugrad.a 

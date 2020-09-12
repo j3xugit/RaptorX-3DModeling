@@ -1,0 +1,31 @@
+compile:
+
+g++ build3Dmodel_v1.23.cpp -o build3Dmodel
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+======
+Usage:
+======
+
+[wangsheng@cruncher RaptorX_Util]$ ./build3Dmodel
+Version: 1.23
+Usage:
+===================================================================
+./build3Dmodel -i fasta_file -q query_name
+        [ -d pdb_root] [ -m mod_bin ] [ -n mod_num ] [ -k keep_file ]
+-------------------------------------------------------------------
+ -i fasta_file:  the input alignment file in fasta format.
+ -q query_name:  the name of the query protein.
+ [-d pdb_root]:  the folder containing the PDB file of the template.
+                 (default = databases/pdb_BC100/ )
+ [-m mod_bin]:   the MODELLER executable file,
+                 (default = ~/bin/modeller9v8/bin/mod9v8 )
+ [-n mod_num]:   the number of 3D models to be generated
+                 from the alignment (default=1)
+ [-k keep_file]: keep temporary files (default=0, not keep)
+===================================================================
+
+
+Note that MODELLER 9v8 should be installed in ~/bin/modeller9v8 as default

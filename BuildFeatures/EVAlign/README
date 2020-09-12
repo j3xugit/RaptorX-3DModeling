@@ -1,0 +1,64 @@
+=============================
+Generate a multiple sequence alignment (in A3M format) by JackHmmer
+
+=============================
+
+
+========
+Install:
+========
+
+install jackhmmer
+
+If the excutable code jackhmmer does not exist under the util/ folder, please install it.
+Assuming that you have Anaconda installed in the folder anaconda2/, then type the following command:
+
+conda install -c bioconda hmmer
+
+afterwards, link anaconda2/bin/jackhmmer to util/jackhmmer .
+
+=========
+Database:
+=========
+
+1. if databases/ not exist, create it by
+
+mkdir -p databases/
+
+
+2. download the uniref90 database from the following link:
+
+wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
+
+uncompressed it, and move all files to databases/
+
+
+======
+Usage:
+======
+
+BuildMSAByJack_evfold.sh is a version derived from Evfold. 
+BuildMSAByJack_simple.sh is a simplified version of BuildMSAByJack_evfold.sh.
+For many sequences, they are equivalent, but need a larger scale test to examine their difference.
+
+Version 3.0 [2018-11-20]
+USAGE: ./BuildMSAByJack.sh <-i input_fasta> [-n iter] [-t thres]
+       [-o out_root] [-j job_id] [-c CPU_num] [-k kill_tmp] [-d uniref90]
+[note1]: default JackHmmer iteration number is 3, CPU_num is 5,
+         and kill_tmp is 1 to remove temporary files.
+[note2]: thres (x) should between 0 and 1, and default is 0.001 for E-value,
+	 for BitScore, threshold shall set to 0.5 so that the BitScore threshold in JackHmmer is set to seqlen*x .
+[note3]: Default value of job_id is tmp, out_root is current directory.
+[note4]: Default uniref90 version is set to 'uniref90'
+
+
+
+================
+Running example:
+================
+
+#-> by default, JackHmmer uses 'E-value' mode
+./BuildMSAByJack.sh -i example/1pazA.fasta -o 1pazA_out -d databases/uniref90.fasta
+
+#-> run JackHmmer in 'BitScore' mode
+./BuildMSAByJack.sh -i example/1pazA.fasta -n 3 -b 1 -t 0.5 -o 1pazA_out -d databases/uniref90.fasta

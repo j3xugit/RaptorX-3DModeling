@@ -1,0 +1,65 @@
+#===========
+# Abstract:
+#===========
+
+Filter a MSA by the aid of calculated Meff via sampling
+
+
+#==========
+# Compile:
+#==========
+
+cd meff_filter_src/
+	make
+	mv meff_filter ../
+cd ../
+
+
+or, type ./install
+
+
+#========
+# Usage:
+#========
+
+Version: 1.00
+Meff_Filter -i/I a3m(a2m)_input -o/O a3m(a2m)_output [-s sim_thres] [-c cut_num]
+           [-S cdhit_thres] [-n sample_num] [-d identity] [-v verbose]
+Usage :
+
+-i/I aXm_input :  Input MSA file in A3M/A2M format.
+
+-o/O aXm_output : Output filterd MSA file in A3M/A2M format.
+
+-s sim_thres :    Similarity threshold to calculate Meff.
+                  (by default, sim_thres = 0.7, should between 0.7 to 1.0)
+
+-c cut_num :      If seq_num in MSA > cut_num, then call CD-HIT.
+                  (by default, cut_num = 20000, set -1 to disable CD-HIT)
+
+-S cdhit_thres :  Similarity threshold to run CD-HIT.
+                  (by default, sim_thres = 0.65, should between 0.65 to 1.0)
+
+-n sample_num :   Sample number to produce a new MSA (default: 20000)
+
+-d identity:      Consider sequence identity in sampleing (default: 0 for NO)
+
+-v verbose :      Verbose running stage or not (default: 0 for NO verbose)
+
+
+#=================
+# Running example:
+#=================
+
+
+#-> 1. input is A3M
+./meff_filter -i example/T0951.a3m -o sampleout -s 0.99 -n 300000 -d 1 -v 1
+
+#-> 2. input is A2M
+./meff_filter -I example/2y5yA.a2m_200k -O sampleout -s 0.99 -n 200000 -d 1 -v 1
+
+
+
+
+
+

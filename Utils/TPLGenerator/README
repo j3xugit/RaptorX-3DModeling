@@ -1,0 +1,20 @@
+the code in this folder is used to generate the traditinal .tpl file from .tgt and .tplpkl file. 
+.tpl files are used by CNF and old DeepThreader.
+
+#-----------------
+# running example:
+#-----------------
+
+./TGT_To_TPL2 -i example/1paz.pdb -I example/1pazA.tgt -h A -o 1pazA.tpl -H `pwd`
+
+or,
+
+./TGTpkl_To_TPL2 -i example/7ceiB.tpl.pkl -I example/7ceiB.tgt -o 7ceiB.tpl -H `pwd`
+
+#------
+# note:
+#------
+
+the required executable PDB_Tool in bin/ could be obtained from the below link:
+https://github.com/realbigws/PDB_Tool 
+

@@ -1,0 +1,80 @@
+=============================
+Sequence Feature Constructor 
+Fast_TGT.sh (v1.01)
+=============================
+
+Title:
+Construct sequence features from input FASTA sequence
+search of homology protein sequences/structures for a query sequence.
+
+Author: 
+Sheng Wang
+
+Email:
+realbigws@gmail.com
+
+
+
+========
+Install:
+========
+
+1. download the package
+
+git clone https://bitbucket.org/realbigws/tgt_package
+mv tgt_package TGT_Package
+cd TGT_Package
+
+--------------
+
+2. compile
+
+cd source_code/
+	make
+cd ../
+
+
+=========
+Database:
+=========
+
+1. if databases/uniprot20 not exist, create it by 
+
+mkdir -p databases/
+
+
+2. download the UniProt20 database from the following link:
+
+http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/uniprot20_2016_02.tgz
+
+uncompressed it, and move all files to databases/
+
+
+3. if other version of UniProt20 is applied, then use '-d uniprot20' option in ./Fast_TGT.sh
+
+
+
+======
+Usage:
+======
+
+Version 1.03 [2016-07-07]
+USAGE: ./Fast_TGT.sh <-i input_fasta> [-n iteration] [-C coverage]
+       [-o out_root] [-j job_id] [-c CPU_num] [-k kill_tmp] [-d uniprot20]
+[note1]: default HHblits iteration number is 3, CPU_num is 4,
+         and kill_tmp is 1 to remove temporary files.
+[note2]: Default value of job_id is tmp, out_root is current directory.
+[note3]: Default coverage is -2, i.e., NOT use -cov in HHblits.
+         if set to -1, then automatically determine coverate value.
+         if set to any other positive value, then use this -cov in HHblits.
+[note4]: Default uniprot20 version is set to 'uniprot20_2016_02'
+
+
+
+================
+Running example:
+================
+
+./Fast_TGT.sh -i example/1pazA.fasta -o 1pazA_out
+
+

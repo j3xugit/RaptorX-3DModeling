@@ -1,0 +1,2 @@
+/usr/bin/ar qc libconjugrad.a  CMakeFiles/conjugrad.dir/src/conjugrad.c.o CMakeFiles/conjugrad.dir/src/debug.c.o CMakeFiles/conjugrad.dir/src/arithmetic_ansi.c.o CMakeFiles/conjugrad.dir/src/conjugrad_cuda.c.o CMakeFiles/conjugrad.dir/src/conjugrad_generated_conjugrad_kernels.cu.o
+/usr/bin/ranlib libconjugrad.a

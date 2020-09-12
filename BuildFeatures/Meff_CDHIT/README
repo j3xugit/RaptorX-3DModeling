@@ -1,0 +1,69 @@
+#===========
+# Abstract:
+#===========
+
+Calculate Meff value by the aid of CD-HIT
+
+
+#==========
+# Compile:
+#==========
+
+cd meff_cdhit_src/
+	make
+	mv meff_cdhit ../
+cd ../
+
+
+or, type ./install
+
+
+#========
+# Usage:
+#========
+
+Version: 1.00
+Calculate_MEFF -i a2m_input [-s sim_thres] [-c cut_num]
+                       [-S cdhit_thres] [-v verbose]
+Usage :
+
+-i a2m_input :    Input MSA file in A2M format.
+
+-s sim_thres :    Similarity threshold to calculate Meff.
+                  (by default, sim_thres = 0.7, should between 0.7 to 1.0)
+
+-c cut_num :      If seq_num in MSA > cut_num, then call CD-HIT.
+                  (by default, cut_num = 20000, set -1 to disable CD-HIT)
+
+-S cdhit_thres :  Similarity threshold to run CD-HIT.
+                  (by default, sim_thres = 0.65, should between 0.65 to 1.0)
+
+-v verbose :      Verbose running stage or not (default: 0 for NO verbose)
+
+
+#=================
+# Running example:
+#=================
+
+# 1) calcualte an A2M with 8K sequences, without running cd-hit
+
+./meff_cdhit -i example/2n5nA.a2m_8k -c -1
+
+
+# 2) calculate an A2M with 12221 sequences, and force cd-hit to run
+
+./meff_cdhit -i example/2n5nA.a2m -c 0
+
+
+# 3) calculate an A2M with 200k sequences, and verbose the stages
+
+./meff_cdhit -i example/2y5yA.a2m_200k -v 1
+
+
+# 4) calculate an A2M with 409385 sequences
+
+./meff_cdhit -i example/2y5yA.a2m
+
+
+
+

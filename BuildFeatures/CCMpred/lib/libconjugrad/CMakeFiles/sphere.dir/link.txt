@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -O3 -g -lm   CMakeFiles/sphere.dir/samples/sphere.c.o  -o bin/sphere -rdynamic libconjugrad.a 

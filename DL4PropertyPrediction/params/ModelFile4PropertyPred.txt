@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#ModelDir=/mnt/data/RaptorXCommon/TrainTestData/ProteinProperty_Project/Jinbo_Folder/result4property/Models/
+ModelDir=$DL4PropertyPredHome/models/
+
+PhiPsiL11Set10820Model=${ModelDir}/SeqResNet1DV214PhiPsi_vonMise2d4-L11Log41W6I60SGNA:16+0.01:5+0.002:1+0.0004-pdb25-10820-train-35069.pkl
+PhiPsiL15Set10820Model=${ModelDir}/SeqResNet1DV214PhiPsi_vonMise2d4-L15Log41W6I60SGNA:16+0.01:5+0.002:1+0.0004-pdb25-10820-train-17299.pkl
+PhiPsiL19Set10820Model=${ModelDir}/SeqResNet1DV214PhiPsi_vonMise2d4-L19Log41W6I60SGNA:16+0.01:5+0.002:1+0.0004+SGNA:8+0.01:2+0.002-pdb25-10820-train-6521.pkl
+
+PhiPsiSet10820Models=${PhiPsiL11Set10820Model}';'${PhiPsiL15Set10820Model}';'${PhiPsiL19Set10820Model}
