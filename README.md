@@ -89,9 +89,12 @@ e.g. UniRef30_2020_03_hhsuite.tar.gz at http://wwwuser.gwdg.de/~compbiol/uniclus
 
 2) Install EVcouplings for generating MSAs by jackhmmer (optional, but not recommended since it is too slow)
 
-It is available at https://github.com/debbiemarkslab/EVcouplings . Although installing the whole package, only the MSA generation module will be used.
+It is available at https://github.com/debbiemarkslab/EVcouplings . Although the whole package will be installed, only the MSA generation module will be used.
+
 Step 1: Download the package by running "git clone https://github.com/debbiemarkslab/EVcouplings.git". Suppose that it is located at $HOME/EVcouplings. 
+
 Step 2: Run "conda create -n evfold anaconda python=3" to create a virtual environment and then switch to this environment by running "conda activate evfold".
+
 Step 3: cd to $HOME/EVcouplings and run "python setup.py install" to install the whole package.
 
 Note that EVcouplings runs on python 3 while this version of RaptorX runs on python 2.
@@ -109,14 +112,14 @@ Download the data file metaclust_50.fasta at https://metaclust.mmseqs.org/curren
 1) PyRosetta (http://www.pyrosetta.org/dow)
 
 Needed to fold a protein sequence from predicted distance/orientation and phi/psi angles.
-Please download the version supporting Python 2.7.
-Afterwards, cd to PyRosetta4.Release.python27.linux.release-224/setup/ and run "python setup.py install" where PyRosetta4.Release.python27.linux.release-224 is the folder of the unpacked package.
+Please download the version supporting Python 2.7 and unpack it. Supposing it is located at PyRosetta4.Release.python27.linux.release-224/,
+cd to PyRosetta4.Release.python27.linux.release-224/setup/ and run "python setup.py install".
 
 2) GNU parallel (optional, but recommended for running folding jobs on a Linux workstation)
 
 Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.sh and SRunFoldNRelaxOneTarget.sh) use GNU parallel to run multiple folding jobs on one or multiple computers.
 Run "which parallel" to see if GNU parallel is available or not.
-If GNU parallel cannot be installed, you may still run folding jobs using other scripts.
+If GNU parallel is not installed, you may still run folding jobs using other scripts.
 
 ## Configuration and export of environment variables ##
 
@@ -135,7 +138,7 @@ Please add ModelingHome to the environmental variable PYTHONPATH.
 and then add ". $ModelingHome/raptorx-external.sh " to the .bashrc file in your own Linux account to set enviromental variables related to MSA generation.
 
 Supposing that the RaptorX-3DModeling package is located at $HOME/RaptorX-3DModeling/,
-below is an example configuration that can be pasted to the .bashrc file if you are using the bash shell.
+below is an example configuration that can be pasted to the .bashrc file (when your account is using the bash shell).
 
 export ModelingHome=$HOME/RaptorX-3DModeling/
 
@@ -159,7 +162,7 @@ If you are using csh shell, you may add a similar setting to the file .cshrc in 
 
 ## Install deep learning models for contact/distance/orientation/angle prediction ##
 
-The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). They are available at http://raptorx.uchicago.edu/download/ .
+The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). They are available at http://raptorx.uchicago.edu/download/ . Later we will also upload these model files to a public data repository website.
 
 1) The package RXDeepModels4DistOri-FM.tar.gz has 6 models for contact/distance/orientation/ prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4DistancePredHome/models/
 
@@ -223,16 +226,16 @@ without requiring you to manually copy data among different machines. This will 
 HHblits and Jackhmmer are two popular tools for protein sequence homology search.
 Enclosed in this package (located in folder BuildFeatures/) there are some scripts that call HHblits and Jackhmmer to build MSAs.
 
-1) To generate MSA for Phi/Psi prediction and threading only, run "BuildMSAs.sh -d ResultDir -m 1 SeqFile" where ResultDir is the folder for result saving.
+1) To generate MSA for phi/psi prediction only, run "BuildMSAs.sh -d ResultDir -m 1 SeqFile" where ResultDir is the folder for result saving.
 Helpers/BuildMSA4Threading.sh is another script for this purpose.
 
 2) To generate a single MSA from a protein sequence for contact/distance prediction, you may use BuildFeatures/HHblitsWrapper/BuildMSA4DistPred.sh and/or BuildFeatures/EVAlign/BuildMSAByJack.sh .
 Note that BuildFeatures/EVAlign/BuildMSAByJack.sh is usually much slower than BuildMSA4DistPred.sh.
 
-3) To generate MSAs for a single protein for contat/distance/orientation prediction, you may use BuildFeatures/BuildMSAs.sh. 
+3) To generate MSAs for a single protein for contact/distance/orientation prediction, you may use BuildFeatures/BuildMSAs.sh. 
 This script may generate multiple MSA files for a single protein depending on your input options.
-For example, to generate MSA for Phi/Psi and contact/distance prediction, you may run "BuildMSAs.sh -d ResultDir -m 9 SeqFile" or "BuildMSAs.sh -d ResultDir -m 25 SeqFile"
-The ResultDir contains two subfolders XXX_contact and XXX_thread where XXX is the protein name. XXX_contact has MSA files for contact/distance prediction and XXX_thread has an MSA file for Phi/Psi prediction.
+For example, to generate MSA for phi/psi and contact/distance prediction, you may run "BuildMSAs.sh -d ResultDir -m 9 SeqFile" or "BuildMSAs.sh -d ResultDir -m 25 SeqFile"
+The ResultDir contains two subfolders XXX_contact and XXX_thread where XXX is the protein name. XXX_contact has MSA files for contact/distance prediction and XXX_thread has an MSA file for phi/psi prediction.
 By default BuildMSAs.sh will not use jackhmmer to generate MSAs since it is slow, but you may enable it by adding 4 to the option value of "-m".
 
 4) To generate MSAs for multiple proteins, you may use BatchBuildMSAs.sh. A set of MSAs will be generated for an individual protein.
@@ -242,14 +245,13 @@ By default, BatchBuildA3M.sh will not use jackhmmer to generate MSAs since it is
 At least one GPU is needed to run CCMpred efficiently. Otherwise it may take a long time to generate features.
 
 6) To directly generate input features for contact/distance/orientation prediction from protein sequences,
-you may run BuildFeatures.sh for a single protein or BatchBuildFeatures.sh for multiple proteins.
+you may run BuildFeatures.sh for a single protein and BatchBuildFeatures.sh for multiple proteins, respectively.
 These two scripts call BuildMSAs.sh to build MSAs and then derive input features from MSAs.
 At least one GPUs is needed to efficiently run CCMpred. When there are no GPUs, it may take a long time on CPUs.
 
 * How to predict contact/distance/orientation from MSAs or input features
 
-GPUs will be needed and CUDA shall be installed.
-Some scripts such as PredictPairRelationRemote.sh and PredictPairRelation4Server.sh may run on a computer without GPUs as long as you may ssh (without password) to a remote computer with GPUs which have RaptorX installed.
+Some scripts such as PredictPairRelationRemote.sh and PredictPairRelation4Server.sh may run on a computer without GPUs as long as you may ssh/scp/rsync (without password) to a remote computer with GPUs with RaptorX installed.
 
 1) To predict contact/distance/orientation from a single MSA file in a3m format, you may use DL4DistancePrediction4/Scripts/PredictPairwiseRelationFromMSA.sh
 Note that the 1st sequence in the A3M file shall be the query sequence without any gaps.
@@ -266,37 +268,38 @@ and then DL4DistancePrediction4/Scripts/PredictPairwiseRelation4Proteins.sh
 5) To print out contact matrix from predicted distance/orientation files, use PrintContactPrediction.sh or BatchPrintContactPrediction.sh in DL4DistancePrediction4/Scripts/
 
 Note that the input feature files generated by GenDistFeaturesFromMSAs.sh and BatchGenDistFeaturesFromMSAs.sh and the predicted distance/orientation file may be very large for a large protein.
-To save disk space, please avoid generating input feature files or predicting distance/orientation for too many proteins in a batch.
+To save disk space, please avoid generating input feature files or predicting distance/orientation for too many proteins in a single batch.
 
-* How to predict protein local structure properties such as Phi/Psi angles and secondary structure
+* How to predict protein local structure properties such as phi/psi angles and secondary structure
 
-Several scripts in /home/jinbo/RaptorX-3DModeling/DL4PropertyPrediction/Scripts/ can be used, e.g., PredictPropertyFromMSA.sh, PredictPropertyFromHHMs.sh, PredictProperty4OneProtein.sh and PredictProperty4Proteins.sh
-Some scripts such as PredictPropertyRemote.sh and PredictProperty4Server.sh may run on a remote computer with GPUs and to which you may ssh without password.
+Several scripts in /home/jinbo/RaptorX-3DModeling/DL4PropertyPrediction/Scripts/ can be used, e.g., PredictPropertyFromMSA.sh, PredictPropertyFromHHMs.sh, PredictProperty4OneProtein.sh and PredictProperty4Proteins.sh. Some scripts such as PredictPropertyRemote.sh and PredictProperty4Server.sh may run on a remote computer with GPUs and to which you may ssh/scp without password.
 
 * How to build 3D models from predicted angle/distance/orientation files
 
-1) To fold a protein from its primary sequence or an MSA without manually run the intermediate steps, you may run RaptorX-3DModeling/Server/RaptorXFolder.sh
+1) To fold a protein from its primary sequence or an MSA without manually running the intermediate steps, run RaptorX-3DModeling/Server/RaptorXFolder.sh
 
-2) When you already have predicted distance/orientation files (ending with .predictedDistMatrix.pkl) and Phi/Psi file (ending with .predictedProperties.pkl), you may use them to fold a protein by several scripts.
+2) When you already have predicted distance/orientation files (ending with .predictedDistMatrix.pkl) and phi/psi file (ending with .predictedProperties.pkl), you may use them to fold a protein by several scripts.
+
 In RaptorX-3DModeling/Folding/, there are LocalFoldNRelaxOneTarget.sh, ParallelFoldNRelaxOneTarget.sh, SRunFoldNRelaxOneTarget.sh and SlurmFoldNRelaxOneTarget.sh, developed for different machine types (e.g., Linux workstation and slurm cluster)
+
 In aptorX-3DModeling/Folding/Scripts4Rosetta/, there are FoldNRelaxOneTarget.sh, FoldNRelaxTargets.sh, and RelaxOneTarget.sh, which mainly run on a Linux workstation.
 
 ## Advanced Usage (to be updated)
 
-* Run scripts on several computers without manually copying files
+* Run scripts on several machines without manually copying data
 
 Suppose that you have access to three machines: the 1st one has a small number of CPUs but not any GPUs, the 2nd one has GPUs but very few CPUs, and the third one has many CPUs but not GPUs. 
-You may start RaptorXFolder.sh on the 1st machine, which will then automatically ship the GPU tasks to the 2nd machine and the folding tasks to the 3rd machine. 
+You may start RaptorXFolder.sh on the 1st machine, which will then automatically run GPU tasks on the 2nd machine and the folding tasks on the 3rd machine. 
 During this process, you do not need to manually copy files and results among machines. 
 To fullfil this, you shall install this RaptorX package (or a portion of it) on the three machines so that on the 1st one you may run MSA generation,
 on the 2nd one you can run GPU tasks (e.g., CCMpred and distance/orientation prediction) and on the 3rd one you may run 3D model building. 
 
-To run GPU tasks at a remote machine, please create one file (e.g., GPUMachines.txt) to specify the remote machines which have GPUs and to which you may ssh without password. 
+To run GPU tasks at a remote machine, please create one file (e.g., GPUMachines.txt) to specify the remote machines with GPUs and to which you may ssh/scp/rsync without password. 
 See an example file in RaptorX-3DModeling/params/. A line in this file looks like "raptorx9.uchicago.edu LargeRAM on" or "raptorx5.uchicago.edu SmallRAM off" 
 where the three fields are the computer name, GPUs of a small RAM (<=12G) or a large RAM, and enabled/disabled, respectively.
 You may save this file at a default location (i.e., RaptorX-3DModeling/params/GPUMachines.txt) or other places.
 
-To run folding jobs at a remote machine, you just need to specify a remote account while running RaptorXFolder.sh. Again please make sure that you may ssh and scp to this remote account without password.  
+To run folding jobs at a remote machine, you just need to specify a remote account through the -R option of RaptorXFolder.sh. Again please make sure that you may ssh/scp to this remote account without password.  
 
 ## Test
 
