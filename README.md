@@ -278,11 +278,7 @@ Several scripts in /home/jinbo/RaptorX-3DModeling/DL4PropertyPrediction/Scripts/
 
 1) To fold a protein from its primary sequence or an MSA without manually running the intermediate steps, run RaptorX-3DModeling/Server/RaptorXFolder.sh
 
-2) When you already have predicted distance/orientation files (ending with .predictedDistMatrix.pkl) and phi/psi file (ending with .predictedProperties.pkl), you may use them to fold a protein by several scripts.
-
-In RaptorX-3DModeling/Folding/, there are LocalFoldNRelaxOneTarget.sh, ParallelFoldNRelaxOneTarget.sh, SRunFoldNRelaxOneTarget.sh and SlurmFoldNRelaxOneTarget.sh, developed for different machine types (e.g., Linux workstation and slurm cluster)
-
-In aptorX-3DModeling/Folding/Scripts4Rosetta/, there are FoldNRelaxOneTarget.sh, FoldNRelaxTargets.sh, and RelaxOneTarget.sh, which mainly run on a Linux workstation.
+2) When you already have predicted distance/orientation files (ending with .predictedDistMatrix.pkl) and phi/psi file (ending with .predictedProperties.pkl), you may use them to fold a protein by several scripts. For example, in RaptorX-3DModeling/Folding/, there are LocalFoldNRelaxOneTarget.sh, ParallelFoldNRelaxOneTarget.sh, SRunFoldNRelaxOneTarget.sh and SlurmFoldNRelaxOneTarget.sh, developed for different machine types (e.g., Linux workstation and slurm cluster). In aptorX-3DModeling/Folding/Scripts4Rosetta/, there are FoldNRelaxOneTarget.sh, FoldNRelaxTargets.sh, and RelaxOneTarget.sh, which mainly run on a Linux workstation.
 
 ## Advanced Usage (to be updated)
 
