@@ -290,7 +290,7 @@ Suppose that you have access to three machines: the 1st one has a small number o
 You may start RaptorXFolder.sh on the 1st machine, which will then automatically run GPU tasks on the 2nd machine and the folding tasks on the 3rd machine. 
 During this process, you do not need to manually copy files and results among machines. 
 To fullfil this, you shall install and configure this RaptorX package (or a portion of it) on the three machines so that on the 1st one you may run MSA generation,
-on the 2nd one you can run GPU tasks (e.g., CCMpred and distance/orientation prediction) and on the 3rd one you may run 3D model building. 
+on the 2nd one you can run GPU tasks (e.g., CCMpred and distance/orientation prediction) and on the 3rd one you may run 3D model building. All related environmental variables shall be correctly set on all machines.
 
 To run GPU tasks at a remote machine, please create one file (e.g., GPUMachines.txt) to specify the remote machines with GPUs and to which you may ssh/scp/rsync without password. 
 See an example file in RaptorX-3DModeling/params/. A line in this file looks like "raptorx9.uchicago.edu LargeRAM on" or "jinbo@aptorx7.uchicago.edu SmallRAM off" 
