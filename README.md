@@ -134,8 +134,8 @@ You may run shell script RaptorXFolder.sh in RaptorX-3DModeling/Server/ to predi
 The input can be a protein sequence in FASTA format (ending with .fasta or .seq) or an MSA file in a3m format (ending with .a3m).
 In the input file, an amino acid shall be represented by a capital letter instead of a 3-letter code.
 
-NOTE that you do not have to set and export any environmental variable to run RaptorXFolder.sh except CUDA_ROOT and those in RaptorX-3DModeling/raptorx-external.sh. 
-However, before explicitly running any other shell scripts or python code, please set up all needed environmental variables described in the below section "setup and export of environment variables".
+NOTE that before running RaptorXFolder.sh, please make sure the environmental variable CUDA_ROOT and those in RaptorX-3DModeling/raptorx-external.sh is correctly set. 
+However, before explicitly running any other shell scripts or python code, you will need to set and export all needed environmental variables described in the below section "setup and export of environment variables".
 
 Running RaptorXFolder.sh (and other shell scripts in this package) without any arguments will show its help information. Below are some scenarios.
 
