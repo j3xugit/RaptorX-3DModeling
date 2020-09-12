@@ -1,39 +1,90 @@
-import numpy as np
-import cPickle
 import os
 import sys
 import time
 import datetime
 import random
-import gc
-import copy
+import numpy as np
 
-import theano.tensor as T
+import cPickle
+import json
+
+import multiprocessing
+import threading
+
 import theano
+import theano.tensor as T
+
+from shared_ndarray import SharedNDArray
 
 import config
-from config import Response2LabelName, Response2LabelType, ParseResponse, GetResponseProbDims, GetResponseValueDims
-import ParseCommandLine as ParseCommandLine
+from config import ParseResponse, GetResponseProbDims, GetResponseValueDims
+import ParseCommandLine
 
-from Model4DistancePrediction import BuildModel
+#from Model4DistancePrediction import BuildModel
+from Model4PairwisePrediction import BuildModel
 
 from Optimizers import SGDM, SGDM2, Nesterov
 from Adams import Adam, AdamW, AdamWAMS, AMSGrad
 
-import DistanceUtils
+import TrainUtils
 import FeatureUtils
 import LabelUtils
 import DataProcessor
 
-from utilsNoT import SampleBoundingBox, Compatible, str_display, IsNumber
-
+from utilsNoT import SampleBoundingBox, Compatible, str_display, SplitList
+from utils import ToFloatX
 from Initialize import InitializeModelSpecs
 
+##a small function to convert shared ndarray to np.ndarray
+## d is a list, in which some elements are shared ndarray
+def ToNonSharedArray(d):
+	newD = []
+	for e in d:
+		if isinstance(e, SharedNDArray):
+			newD.append(e.array)
+		else:
+			newD.append(e)
+	return newD
+
+## data is a list of arrays, some of which are SharedNDArray
+def FreeSharedArrayInOneBatch(data):
+	if data is None:
+		return
+	for e in data:
+		if isinstance(e, SharedNDArray):
+			e.unlink()
+
+## data is a list of batches. Each batch is a list of arrays, some of which are SharedNDArray
+def FreeSharedArrayInBatches(data):
+	if data is None:
+		return
+	for batch in data:
+		FreeSharedArrayInOneBatch(batch)
+
+##calculate the weight for each minibatch where weightList is the weight matrix and base is the normalization constant
+##weightList is a list of tensors, each having shape(batchSize, seqLen, seqLen)
+##base is an 1d array, with the same length as weightList
+def CalcBatchWeight(weightList, base):
+	if weightList is None or len(weightList)<=0:
+		return None
+	assert len(weightList) == base.shape[0]
+	weight = [ T.sum(w)*1./b for w, b in zip(weightList, base) ]
+
+	return T.stack(weight)
+
+def ScaleLossByBatchWeight(loss, weightList, modelSpecs):
+	weightedLoss = loss
+        if weightList is not None and len(weightList)>0:
+		if modelSpecs.has_key('batchWeightBase'):
+			batchWeight = CalcBatchWeight(weightList, modelSpecs['batchWeightBase'])
+			weightedLoss = T.mul(loss, batchWeight)
+
+	return weightedLoss
 
 ## pdecay is the decay of params. It is only used for AdamW and AdamWAMS
 ## if pdecay is None, then in AdamW and AdamWAMS, pdecay is set to params
+## Only SGDM, Adam and AdamW are fully tested
 def UpdateAlgorithm(alg, params, gparams, pdecay, lr=None, l2reg=None):
-    	## currently the code mainly work for Adam. Other algorithms are not fully tested.
 
 	other_params = []
 
@@ -68,7 +119,7 @@ def UpdateAlgorithm(alg, params, gparams, pdecay, lr=None, l2reg=None):
 
 	return updates, other_params
 
-## Initialize check point. We do not set the values of other_params since when this function is called, other_params may not be defined
+## Initialize the check point. We do not set the values of other_params since when this function is called, other_params may not be defined
 def InitializeChkpoint(params, modelSpecs):
         chkpoint = dict()
         chkpoint['best_validation_loss'] = np.array([np.inf ] * len(modelSpecs['responses']) )
@@ -101,35 +152,36 @@ def InitializeChkpoint(params, modelSpecs):
 		restart = True
 
         else:
-                print 'could not find the check point file: ', checkPointFile
-                print 'training the model from scratch ...'
+                print 'Could not find the check point file: ', checkPointFile
+                print 'Training the model from scratch ...'
 
         return chkpoint, restart
 
 ## calculate loss, error and accuracy for a set of data
-## validate is the function that executes the validation procedure
-## validate has two options: fullvalidate or quickvalidate
-def ValidateAllData(SeqDataset, validate, modelSpecs, forRefState=False):
+## validate is a theano function that executes the validation procedure
+## validate has two possible implementations: fullvalidate or quickvalidate
+
+## batches is a list of minibatch, each containing a list of protein information
+def ValidateAllData(validData, validate, modelSpecs, forRefState=False):
 	accs = []
 	losses = []
 	errs = []
         numSamples = []
 
-        if modelSpecs['UseSampleWeight']:
+        if config.UseSampleWeight(modelSpecs):
                 w4losses = []
                 w4errors = []
         else:
                 w4losses = None
                 w4errors = None
 
-        for minibatch in SeqDataset:
-		onebatch, _= DataProcessor.AssembleOneBatch(minibatch, modelSpecs, forRefState=forRefState)
 
-		## add a bounding box, which shall be equivalent to the shape of pairwise features
-		x2d = onebatch[1]
-		boundingbox = np.array([0, 0, x2d.shape[1], x2d.shape[2] ]).astype(np.int32)
+        for batch in validData:
+		
+		input = ToFloatX( ToNonSharedArray(batch) )
+		onebatch = input[:-1]
 
-	       	onebatch_res = validate( *(onebatch + [boundingbox]) )
+	       	onebatch_res = validate( *input )
 		los = onebatch_res[0]
 		err = onebatch_res[1]
 		losses.append(los)
@@ -138,11 +190,12 @@ def ValidateAllData(SeqDataset, validate, modelSpecs, forRefState=False):
 		if len(onebatch_res) > 2:
 			acc = onebatch_res[2]
 	    		accs.append( acc )
-			##numSamples is the number of proteins
+			##numSamples is the number of proteins in one batch
 	    		numSamples.append(onebatch[0].shape[0])
 
-                if modelSpecs['UseSampleWeight']:
-                        weights = onebatch[ len(onebatch) - len(modelSpecs['responses']) : ]
+                if config.UseSampleWeight(modelSpecs):
+                        #weights = onebatch[ len(onebatch) - len(modelSpecs['responses']) : ]
+                        weights = onebatch[-len(modelSpecs['responses']) : ]
                         w4loss = []
                         w4error = []
                         for res, w in zip(modelSpecs['responses'], weights):
@@ -152,7 +205,6 @@ def ValidateAllData(SeqDataset, validate, modelSpecs, forRefState=False):
                         w4losses.append(w4loss)
                         w4errors.append(w4error)
 
-
 	## The loss and err is normalized by the weight of each minibatch. This is equivalent to minimize loss and err per residue pair
 	## The top accuracy is not normalized by the weight of a minibatch, i.e.,  we want to maximize per-protein accuracy.
 	if len(accs)>0 and len(numSamples)>0 :
@@ -160,77 +212,18 @@ def ValidateAllData(SeqDataset, validate, modelSpecs, forRefState=False):
 	else:
         	return np.average(losses, axis=0, weights=w4losses), np.average(errs, axis=0, weights=w4errors)
 
-## this function is used to skip a portion of one epoch. It reads a file SkipOneEpoch.pid to obtain which epoch to skip where pid is the process id of the training program. 
-## For example, if the file has a float 16.4, then the 17th epoch will be skipped after training 40% of the 16th epoch
-## To skip one whole epoch, please see AdjustEpochs()
-def SkipOneEpoch(epoch, minibatch_index, n_train_batches):
+def TrainByOneBatch(batch, train, modelSpecs, forRefState=False):
 
-	file4skip = 'SkipOneEpoch.' + str(os.getpid() )
-	if not os.path.isfile(file4skip):
-		return False
+	## batch is a list of protein locations, so we need to load the real data here
+	minibatch = DataProcessor.LoadRealData(batch, modelSpecs)
 
-	first_line='0'
-	try:
-		with open(file4skip, 'r') as f:
-    			first_line = f.readline()
-	except IOError:
-		print 'WARNING: could not read file ', file4skip
-		return False
+	## add code here to make sure that the data has the same input dimension as the model specification
+	FeatureUtils.CheckModelNDataConsistency(modelSpecs, minibatch)
 
-	try:
-		epoch4stop = np.float32( first_line.strip() )
-	except ValueError:
-		print 'WARNING: value in file is not a valid float: ', file4skip
-		return False
-
-	if epoch4stop <= (epoch - 1) or epoch4stop >= epoch:
-		## epoch4stop is not for this epoch
-		return False
-
-	n_cutoff_batches = (epoch4stop + 1 - epoch) * n_train_batches
-
-	if n_cutoff_batches > minibatch_index:
-		return False
-
-	## now we shall skip the rest of this epoch
-	try:
-		os.remove(file4skip)
-	except IOError:
-		print 'WARNING: could not remove file ', file4skip
-
-	return True
-
-## this function can be used to add or remove a few epochs in training
-def AdjustEpochs():
-	## this function reads a number from a file named AdjustEpoch.pid where pid is the process id returned by os.getpid()
-	## When the number is positive, then run a few more epochs. When it is negative, then reduce a few epochs.
-
-	file4EpochChange = 'AdjustEpoch.' + str(os.getpid() )
-	if not os.path.isfile(file4EpochChange):
-		return 0
-
-	try:
-		with open(file4EpochChange, 'r') as f:
-    			first_line = f.readline()
-		os.remove(file4EpochChange)
-
-	except IOError:
-		print 'ERROR: could not read or write file ', file4EpochChange
-		return 0
-
-	try:
-		change = np.int32(first_line.strip())
-	except ValueError:
-		print 'WARNING: value in file is not a valid integer: ', file4EpochChange
-		return 0
-
-	return change
-
-def TrainByOneBatch(minibatch, train, modelSpecs, forRefState=False):
-
-	## we have to crop input for a very large protein to avoid crash due to limited GPU memory
 	onebatch, names4onebatch = DataProcessor.AssembleOneBatch(minibatch, modelSpecs, forRefState=forRefState)
         x1d, x2d, x1dmask, x2dmask = onebatch[0:4]
+
+	## crop a large protein to deal with limited GPU memory. For sequential and embedding features, the theano model itself will crop based upon bounding box
         bounds = SampleBoundingBox( (x2d.shape[1], x2d.shape[2]), modelSpecs['maxbatchSize'] )
 
         #x1d_new = x1d[:, bounds[1]:bounds[3], :]
@@ -255,7 +248,7 @@ def TrainByOneBatch(minibatch, train, modelSpecs, forRefState=False):
 		remainings = onebatch[4:]
 
 
-        ##crop the remaining input including the ground truth and weight matrices
+        ##crop the ground truth and weight matrices
 	for x2d0 in remainings:
 		if len( x2d0.shape ) == 3:
 			input.append( x2d0[:, bounds[0]:bounds[2], bounds[1]:bounds[3] ] )
@@ -275,25 +268,21 @@ def TrainByOneBatch(minibatch, train, modelSpecs, forRefState=False):
 
 	return train_loss, train_errors, param_L2
 
-## train the model for one epoch. That is, scanning all the training data once
-def RunOneEpoch(epoch, chkpoint, params, other_params, trainSeqData, validSeqData, train, quickValidate, fullValidate, modelSpecs):
-	print 'start time of epoch ', epoch, ': ', datetime.datetime.now()
+## train the model for one epoch. Each epoch scan the whole list of sampled training proteins once.
+def RunOneEpoch(epoch, data, chkpoint, params, other_params, train, quickValidate, fullValidate, modelSpecs):
+	print '\nstart time of epoch ', epoch, ': ', datetime.datetime.now()
 
-        random.shuffle(trainSeqData)
+	## trainSeqData and validSeqData are a list of batches. Each batch contain file paths for feature and labels of a protein
+	## the real content of a training/validation protein will be loaded right before running training and validation
+	trainSeqData, validSeqData = data
+
+        #random.shuffle(trainSeqData), 
+	## we just use trainSeqData to approximately estimate the number of batches. the real train data is loaded by another process
 	n_train_batches = len(trainSeqData)
 
-	if epoch > 16:
-		validation_frequency = np.int32(0.8 * modelSpecs['validation_frequency'])
-	elif epoch > 13:
-		validation_frequency = np.int32(1.0 * modelSpecs['validation_frequency'])
-	elif epoch > 11:
-		validation_frequency = np.int32(1.3 * modelSpecs['validation_frequency'])
-	elif epoch > 9:
-		validation_frequency = np.int32(1.8 * modelSpecs['validation_frequency'])
-	elif epoch > 5:
-		validation_frequency = np.int32(2.2 * modelSpecs['validation_frequency'])
-	else:
-		validation_frequency = np.int32(2.5 * modelSpecs['validation_frequency'])
+        validation_frequency = min( max( len(validSeqData), len(trainSeqData)/12 ), len(trainSeqData)/6)
+	validation_frequency *= max(0.8, min(3.5, 16.0/(epoch+0.0001)))
+	validation_frequency = np.int32(validation_frequency)
 
 	chkpt_save_frequency = max(1, min(validation_frequency, np.int32( len(trainSeqData) / 30 ) ) )
 
@@ -301,22 +290,45 @@ def RunOneEpoch(epoch, chkpoint, params, other_params, trainSeqData, validSeqDat
         t_errors = []
         results = []
 
-        for minibatch_index, minibatch in zip(xrange( n_train_batches ), trainSeqData):
-		train_loss, train_errors, param_L2 = TrainByOneBatch(minibatch, train, modelSpecs)
+        for minibatch_index in xrange( n_train_batches ):
+		#input = TrainUtils.FetchOneBatch(sharedQ)
+		#input = TrainUtils.FetchOneBatch(sharedQ, modelSpecs)
+		global trainSharedQ, trainSharedLabelPool, trainSharedLabelWeightPool
+		d = trainSharedQ.get()
+
+		#print 'convert shared array to non-shared array...'
+		input = ToFloatX(ToNonSharedArray(d) )
+
+		#print 'feed non-shared array to train...'
+		train_loss, train_errors, param_L2 = train(*input)
+
+		#print 'free shared array after train...'
+		FreeSharedArrayInOneBatch(d)
+
                 t_loss.append(train_loss)
                 t_errors.append(train_errors)
 
+		""" need some revision here if TrainByRefLoss is enabled
 		if config.TrainByRefLoss(modelSpecs):
 			## add code here to train by a reference input
 			_, _, param_L2 = TrainByOneBatch(minibatch, train, modelSpecs, forRefState=True)
+		"""
 
 		## validate the model	
                 if ( minibatch_index + 1 ) % validation_frequency  == 0:
+			global validData, validSharedQ, validDataLoader, stopValidDataLoader
+			if validData is None:
+				print 'Fetching all validation data at ', datetime.datetime.now()
+				validData = [ validSharedQ.get() for i in range(len(validSeqData) ) ]
+				stopValidDataLoader.set()
+				validDataLoader.terminate()
+				validDataLoader.join()	
+				print 'Finish fetching validation data at ', datetime.datetime.now()
 
-			valid_loss, valid_errors = ValidateAllData(validSeqData, quickValidate, modelSpecs)
+			valid_loss, valid_errors = ValidateAllData(validData, quickValidate, modelSpecs)
 
 			if config.UseRefState(modelSpecs):
-				ref_loss, ref_errors = ValidateAllData(validSeqData, quickValidate, modelSpecs, forRefState=True)
+				ref_loss, ref_errors = ValidateAllData(validData, quickValidate, modelSpecs, forRefState=True)
                         	print( 'epoch %2d, minibatch %4d/%4d, train loss %s, train error %s, paramL2 %.2f, valid loss %s, valid error %s, ref loss %s, ref error %s' % (epoch, minibatch_index + 1, n_train_batches, str_display(train_loss), str_display(train_errors), param_L2, str_display(valid_loss), str_display(valid_errors), str_display(ref_loss), str_display(ref_errors) ) )
 			else:
                         	print( 'epoch %2d, minibatch %4d/%4d, train loss %s, train error %s, paramL2 %.2f, valid loss %s, valid error %s' % (epoch, minibatch_index + 1, n_train_batches, str_display(train_loss), str_display(train_errors), param_L2, str_display(valid_loss), str_display(valid_errors) ) )
@@ -359,10 +371,9 @@ def RunOneEpoch(epoch, chkpoint, params, other_params, trainSeqData, validSeqDat
 		## For example, if the file has a float 16.4, then the 17th epoch will be skipped after training 40% of the epoch
 		## To skip one whole epoch, please see AdjustEpochs()
 		chk_skip_frequency = chkpt_save_frequency
-                if ( minibatch_index + 1 ) % chk_skip_frequency ==0 and SkipOneEpoch(epoch, minibatch_index, n_train_batches):
-			print 'Skip the rest of epoch ', epoch 
+                if ( minibatch_index + 1 ) % chk_skip_frequency ==0 and TrainUtils.SkipOneEpoch(epoch, minibatch_index, n_train_batches):
+			print 'Skip the rest of epoch ... ', epoch 
 			break
-				
 
         ## statistics
         avg_train_loss = np.average( t_loss, axis=0  )
@@ -373,16 +384,17 @@ def RunOneEpoch(epoch, chkpoint, params, other_params, trainSeqData, validSeqDat
                  ( epoch, str_display(avg_train_loss), str_display(avg_train_errors), str_display(avg_valid_loss), str_display(avg_valid_errors) ) )
 
         ## test on the validation data
-        validLoss, validErr, validAcc = ValidateAllData(validSeqData, fullValidate, modelSpecs)
+	assert validData is not None
+        validLoss, validErr, validAcc = ValidateAllData(validData, fullValidate, modelSpecs)
 
 	if config.UseRefState(modelSpecs):
-        	refLoss, refErr = ValidateAllData(validSeqData, quickValidate, modelSpecs, forRefState=True)
+        	refLoss, refErr = ValidateAllData(validData, quickValidate, modelSpecs, forRefState=True)
         	print 'valid loss: ', validLoss, 'valid err: ', validErr, 'ref loss: ', refLoss, 'ref err: ', refErr
 	else:
         	print 'valid loss: ', validLoss, 'valid err: ', validErr
 
 	#print validAcc
-	print "validAcc: ", [ str_display(vAcc[:, 0]) for vAcc in validAcc ], ' for top ', modelSpecs['topRatios']
+	print "validAcc: ", [ str_display(vAcc[:, 0]) for vAcc in validAcc ], ' for top seqLen *', modelSpecs['topRatios'], ' long-, medium-, long+medium- and short-range predictions'
 
         if np.mean(validLoss) < np.mean(chkpoint['best_validation_loss'] ):
                 chkpoint['best_validation_loss'] = validLoss
@@ -398,35 +410,57 @@ def RunOneEpoch(epoch, chkpoint, params, other_params, trainSeqData, validSeqDat
 	print 'best epoch: ', chkpoint['best_epoch'], 'best valid loss: ', chkpoint['best_validation_loss'], 'train loss: ', chkpoint['train_loss4best_validation_loss']
 	print 'end time of epoch ', epoch, ': ', datetime.datetime.now()
 
+## train the model for one stage, which consists of a few epochs with the same learning rate
+## if startFromBest is True, then start from the previously best model parameters
+## data is a tuple (trainMetaData, validMetaData)
+def RunOneStage(epoch_start, epoch_end, data, chkpoint, loss4train, loss4validate, pgrads, pdecay, modelSpecs, lr=np.float32(0.0001), startFromBest=(False, False) ):
 
-##calculate the weight for each minibatch where weightList is the weight matrix and base is the normalization
-##weightList is a list of tensors, each having shape(batchSize, seqLen, seqLen)
-##base is an 1d array, with the same length as weightList
-def CalcBatchWeight(weightList, base):
-	if weightList is None or len(weightList)<=0:
-		return None
-	assert len(weightList) == base.shape[0]
-	weight = [ T.sum(w)*1./b for w, b in zip(weightList, base) ]
+	params = modelSpecs['params']
+	errors = modelSpecs['errors']
+	topAcc = modelSpecs['topAcc']
+	algorithm = modelSpecs['algorithm']
+	variable4train = modelSpecs['variable4train']
+	variable4validate = modelSpecs['variable4validate']
+	paramL2 = modelSpecs['paramL2']
 
-	return T.stack(weight)
+        updates, other_params = UpdateAlgorithm(algorithm, params, pgrads, pdecay, lr=np.float32(lr), l2reg=modelSpecs['L2reg'] )
 
-def ScaleLossByBatchWeight(loss, weightList, modelSpecs):
-	weightedLoss = loss
-        if weightList is not None and len(weightList)>0:
-		if modelSpecs.has_key('batchWeightBase'):
-			batchWeight = CalcBatchWeight(weightList, modelSpecs['batchWeightBase'])
-			weightedLoss = T.mul(loss, batchWeight)
+        if startFromBest[0] and chkpoint.has_key('bestParamValues') and Compatible(params, chkpoint['bestParamValues']):
+        	[ u.set_value(v) for u, v in zip(params, chkpoint['bestParamValues']) ]
 
-	return weightedLoss
+        if startFromBest[1] and chkpoint.has_key('bestOtherParamValues') and Compatible(other_params, chkpoint['bestOtherParamValues']):
+                [ u.set_value(v) for u, v in zip(other_params, chkpoint['bestOtherParamValues']) ]
 
-def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqData=None):
-    	if modelSpecs is None:
-        	print 'Please provide a model specification for training'
-        	exit(1)
+        train = theano.function(variable4train, [loss4train, errors, paramL2], updates=updates, on_unused_input='warn')
+        quickValidate = theano.function(variable4validate, [loss4validate, errors], on_unused_input='warn')
+        fullValidate = theano.function(variable4validate, [loss4validate, errors, topAcc], on_unused_input='warn')
 
-    	if (not trainSeqData) or (not validSeqData):
-        	print 'Please provide train and validation data for model training'
-		exit(1)
+        epoch = epoch_start
+        while (epoch < epoch_end):
+        	epoch += 1
+                RunOneEpoch(epoch, data, chkpoint, params, other_params, train, quickValidate, fullValidate, modelSpecs)
+                if epoch>=14 and (epoch - chkpoint['best_epoch'] > modelSpecs['patience']):
+                	break
+
+		## check to see if we want to run more or fewer epochs 
+		change = TrainUtils.AdjustEpochs()
+		if change != 0:
+			epoch = max(0, epoch - change )
+			chkpoint['best_epoch'] = max(0, chkpoint['best_epoch'] - change )
+			if change >0:
+				print 'Running ', change, ' more epochs...'
+			elif change <0:
+				print 'Running ', -change, ' fewer epochs...'
+
+	## make a copy of check point file at the end of each stage
+	if modelSpecs.has_key('checkpointFile') and (modelSpecs['checkpointFile'] is not None):
+		dst = modelSpecs['checkpointFile'] + '-epoch' + str(epoch) 
+		from shutil import copyfile
+		copyfile(modelSpecs['checkpointFile'], dst)
+
+        return epoch
+
+def PrepareModel(modelSpecs=None):
 
 	distancePredictor, x, y, xmask, ymask, xem, labelList, weightList, box, trainByRefLoss = BuildModel(modelSpecs)
 
@@ -457,17 +491,16 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
     	param_shapes = [ p.get_value().shape for p in params ]
     	param_sizes = map( np.prod, param_shapes )
     	modelSpecs['numParams'] = sum(param_sizes)
-    	print 'The model has ', modelSpecs['numParams'], ' parameters.'
 
     	param4mean_shapes = [ p.get_value().shape for p in params4mean ]
     	param4mean_sizes = map( np.prod, param4mean_shapes )
     	modelSpecs['numParams4mean'] = sum(param4mean_sizes)
-    	print 'The model has ', modelSpecs['numParams4mean'], ' parameters for mean.'
 
     	param4var_shapes = [ p.get_value().shape for p in params4var ]
     	param4var_sizes = map( np.prod, param4var_shapes )
     	modelSpecs['numParams4var'] = sum(param4var_sizes)
-    	print 'The model has ', modelSpecs['numParams4var'], ' parameters for variance.'
+
+    	print 'The model has ', modelSpecs['numParams'], ' parameters, including ', modelSpecs['numParams4mean'], ' for mean and ', modelSpecs['numParams4var'], ' for variance.'
 
 	regularizer = 0
 	"""
@@ -481,60 +514,77 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
         if modelSpecs.has_key('L2reg') and modelSpecs['L2reg']>0:
                 regularizer += (modelSpecs['L2reg'] * paramL2)
 
-        modelSpecs['validation_frequency'] = min( max( len(validSeqData), len(trainSeqData)/12 ), len(trainSeqData)/6)
-
     	if weightList is not None and len(weightList)>0:
 		errors = distancePredictor.errors(labelList, weightList)
     	else:
         	errors = distancePredictor.errors(labelList)
-
     	topAcc = distancePredictor.TopAccuracyByRange(labelList)
 
+	modelSpecs['variable4train'] = variable4train
+	modelSpecs['variable4validate'] = variable4validate
+	modelSpecs['params'] = params
+	modelSpecs['params4mean'] = params4mean
+	modelSpecs['params4var'] = params4var
+	modelSpecs['paramL2'] = paramL2
+	modelSpecs['regularizer'] = regularizer
+	modelSpecs['topAcc'] = topAcc
+	modelSpecs['errors'] = errors
+	modelSpecs['labelList'] = labelList
+	modelSpecs['weightList'] = weightList
+	modelSpecs['trainByRefLoss'] = trainByRefLoss
+
+	return distancePredictor, variable4train, variable4validate, params, params4mean, params4var, paramL2, regularizer, topAcc, errors, labelList, weightList, trainByRefLoss
+
+## clean up after training
+def Cleanup():
+
+	global validDataLoader, stopValidDataLoader, validData
+	#print 'In Cleanup: ', stopValidDataLoader
+	if validDataLoader.is_alive():	
+		#print 'notify the validation data loader to stop'
+		stopValidDataLoader.set()
+
+	global stopTrainDataLoader, trainDataLoaders
+	#print 'In Cleanup: ', stopTrainDataLoader
+	for trainDataLoader in trainDataLoaders:
+		if trainDataLoader.is_alive():
+			#print 'notify the train data loader to stop'
+			stopTrainDataLoader.set()
+
+	if validData is not None:
+		print 'free validation data...'
+		FreeSharedArrayInBatches(validData)
+		del validData[:]
+		validData = None
+
+	time.sleep(10)
+
+	##free shared memory occupied by those data still in trainSharedQ
+	print 'free shared array in trainSharedQ, which currently has about ', trainSharedQ.qsize(), ' objects'
+	#print 'trainSharedQ.empty(): ', trainSharedQ.empty()
+	#while not trainSharedQ.empty():
+	while trainSharedQ.qsize()>0:
+		d = trainSharedQ.get()
+		FreeSharedArrayInOneBatch(d)
+	print 'Please double check files (starting with RaptorX-' + str(os.getpid()), ') at /dev/shm/ to make sure all shared memory has been freed'
+
+	if validDataLoader.is_alive():
+		print 'stop the validation data loader...'
+		validDataLoader.terminate()
+	validDataLoader.join()
+
+def TrainModel(modelSpecs, trainValidData=None, predDataFile=None):
+    	if (not trainValidData):
+        	print 'Please provide train and validation data for model training'
+		exit(1)
+
+    	if modelSpecs is None:
+        	print 'Please provide a model specification for training'
+        	exit(1)
+
+	distancePredictor, variable4train, variable4validate, params, params4mean, params4var, paramL2, regularizer, topAcc, errors, labelList, weightList, trainByRefLoss = PrepareModel(modelSpecs)
+
 	chkpoint, restart = InitializeChkpoint(params, modelSpecs)
-
-	## train the model for one stage, which consists of a few epochs with the same learning rate
-	## if startFromBest is True, then start from the previously best model parameters
-	def RunOneStage(epoch_start, epoch_end, loss4train, loss4validate, gparams, lr, pdecay, algorithm='Adam', startFromBest=(False, False) ):
-
-                #updates, other_params = UpdateAlgorithm(modelSpecs['algorithm'], params, gparams, param_shapes, np.float32(lr) )
-                updates, other_params = UpdateAlgorithm(algorithm, params, gparams, pdecay, lr=np.float32(lr), l2reg=modelSpecs['L2reg'] )
-
-                if startFromBest[0] and chkpoint.has_key('bestParamValues') and Compatible(params, chkpoint['bestParamValues']):
-                        [ u.set_value(v) for u, v in zip(params, chkpoint['bestParamValues']) ]
-
-                if startFromBest[1] and chkpoint.has_key('bestOtherParamValues') and Compatible(other_params, chkpoint['bestOtherParamValues']):
-                        [ u.set_value(v) for u, v in zip(other_params, chkpoint['bestOtherParamValues']) ]
-
-                train = theano.function(variable4train, [loss4train, errors, paramL2], updates=updates, on_unused_input='warn')
-                quickValidate = theano.function(variable4validate, [loss4validate, errors], on_unused_input='warn')
-                fullValidate = theano.function(variable4validate, [loss4validate, errors, topAcc], on_unused_input='warn')
-
-                epoch = epoch_start
-                while (epoch < epoch_end):
-                        epoch += 1
-
-                        RunOneEpoch(epoch, chkpoint, params, other_params, trainSeqData, validSeqData, train, quickValidate, fullValidate, modelSpecs)
-                        if epoch>=14 and (epoch - chkpoint['best_epoch'] > modelSpecs['patience']):
-                                break
-
-			## check to see if we want to run more or fewer epochs 
-			change = AdjustEpochs()
-			if change != 0:
-				epoch = max(0, epoch - change )
-				chkpoint['best_epoch'] = max(0, chkpoint['best_epoch'] - change )
-				if change >0:
-					print 'Running ', change, ' extra epochs...'
-				elif change <0:
-					print 'Running ', -change, ' fewer epochs...'
-
-		## make a copy of check point file at the end of each stage
-		if modelSpecs.has_key('checkpointFile') and (modelSpecs['checkpointFile'] is not None):
-			dst = modelSpecs['checkpointFile'] + '-epoch' + str(epoch) 
-			from shutil import copyfile
-			copyfile(modelSpecs['checkpointFile'], dst)
-
-                return epoch
-
 
 	assert ( len(modelSpecs['numEpochs'] ) > 0 )
 	numEpochs4stages = np.cumsum(modelSpecs['numEpochs'] )
@@ -563,7 +613,7 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
                 	cost = T.sum( T.mul(loss4train, modelSpecs['w4responses']) ) / np.sum(modelSpecs['w4responses']) + regularizer
 
                 params4var_set = set(params4var)
-                gparams = [ T.grad(cost, p, consider_constant=weightList,disconnected_inputs='warn') if p not in params4var_set else T.zeros_like(p) for p in params ]
+                pgrads = [ T.grad(cost, p, consider_constant=weightList,disconnected_inputs='warn') if p not in params4var_set else T.zeros_like(p) for p in params ]
                 pdecay = [ p if p not in params4var_set else T.zeros_like(p) for p in params ]
 
 	for stage, lr, epoch_end in zip(xrange(len(numEpochs4stages) ), modelSpecs['lrs'], numEpochs4stages):
@@ -573,7 +623,7 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
                 print 'training for mean using a learning rate ', lr, ' ...'
 		startFromBest = (stage>0 and epoch == numEpochs4stages[stage-1] )
                 epoch_start = epoch 
-                epoch = RunOneStage(epoch_start, epoch_end, loss4train, loss4validate, gparams, lr, pdecay=pdecay, algorithm=modelSpecs['algorithm'], startFromBest=(startFromBest, startFromBest) )
+                epoch = RunOneStage(epoch_start, epoch_end, trainValidData, chkpoint, loss4train, loss4validate, pgrads, pdecay, modelSpecs, lr=lr, startFromBest=(startFromBest, startFromBest) )
 		
 
         ## train parameters only specific to variance and correlation
@@ -611,7 +661,7 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
                 		cost = T.sum( T.mul(loss4train, modelSpecs['w4responses']) ) / np.sum(modelSpecs['w4responses']) + regularizer
 
                 	params4var_set = set(params4var)
-                	gparams = [ T.grad(cost, p, consider_constant=weightList, disconnected_inputs='raise') if p in params4var_set else T.zeros_like(p) for p in params ]
+                	pgrads = [ T.grad(cost, p, consider_constant=weightList, disconnected_inputs='raise') if p in params4var_set else T.zeros_like(p) for p in params ]
                 	pdecay = [ p if p in params4var_set else T.zeros_like(p) for p in params ]
 
 		for stage, lr, epoch_end in zip(xrange(len(lrs)), lrs, numEpochs4stages):
@@ -621,7 +671,7 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
 			print 'training for variance using a learning rate ', lr, ' ...'
 			startFromBest = ( (stage==0 and epoch == previousEpochs4Stages[-1])  or (stage>0 and epoch == numEpochs4stages[stage-1] ) )
 			epoch_start = epoch
-                	epoch = RunOneStage(epoch_start, epoch_end, loss4train, loss4validate, gparams, lr, pdecay=pdecay, algorithm=modelSpecs['algorithm'], startFromBest=(startFromBest, startFromBest and (stage>0) ) )
+                	epoch = RunOneStage(epoch_start, epoch_end, trainValidData, chkpoint, loss4train, loss4validate, pgrads, pdecay, modelSpecs, lr=lr, startFromBest=(startFromBest, startFromBest and (stage>0) ) )
 
     	resultModel = {}
     	resultModel['dateTrained']=datetime.datetime.now()
@@ -646,8 +696,24 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
 
     	print 'best param L1 norm: ', bestParamL1norm, 'L2 norm: ', bestParamL2norm
 
-    	#test on prediction data if it is given. Here the prediction data shall contain ground truth.
-     	if predSeqData is not None:
+	Cleanup()
+
+    	#test on prediction data if it is given. Here the prediction data shall be small to save memory and contain ground truth.
+     	if modelSpecs['predFile'] is not None:
+		predMetaData = DataProcessor.LoadMetaData(modelSpecs['predFile'])
+		predDataLocation = DataProcessor.SampleProteinInfo(predMetaData)
+                predBatches = DataProcessor.SplitData2Batches(predDataLocation, numDataPoints=624, modelSpecs=modelSpecs)
+		print '\nLoading prediction data...'
+                print "#predData minibatches:", len(predBatches)
+
+		predData = []
+		for batch in predBatches:
+			data = DataProcessor.LoadRealData(batch, modelSpecs, returnMode='list')
+			FeatureUtils.CheckModelNDataConsistency(modelSpecs, data)
+			#input = TrainUtils.PrepareInput4Prediction(data, modelSpecs, floatType=np.float16)
+			input = TrainUtils.PrepareInput4Prediction(data, modelSpecs, floatType=theano.config.floatX)
+			predData.append(input)
+
         	if weightList is not None and len(weightList)>0:
                 	loss4validate = distancePredictor.loss(labelList, weightList = weightList)
         	else:
@@ -661,9 +727,9 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
     		for param, value in zip(params, chkpoint['bestParamValues']):
        			param.set_value(value)
 
-        	predLoss, predErr, predAcc = ValidateAllData(predSeqData, fullValidate, modelSpecs)
+        	predLoss, predErr, predAcc = ValidateAllData(predData, fullValidate, modelSpecs)
 		if config.UseRefState(modelSpecs):
-        		refLoss, refErr = ValidateAllData(predSeqData, quickValidate, modelSpecs, forRefState=True)
+        		refLoss, refErr = ValidateAllData(predData, quickValidate, modelSpecs, forRefState=True)
         		print 'pred loss: ', predLoss, 'pred err: ', predErr, 'ref loss: ', refLoss, 'ref err: ', refErr
 		else:
         		print 'pred loss: ', predLoss, 'pred err: ', predErr
@@ -673,125 +739,22 @@ def TrainModel(modelSpecs=None, trainSeqData=None, validSeqData=None, predSeqDat
         	print "predAcc: ", [ str_display(pAcc[:, 0]) for pAcc in predAcc ], 'for top ', modelSpecs['topRatios']
         	resultModel['predAcc'] = predAcc
 
+		del predData[:]
+
 	## training is done, remove the checkpoint file since it has been copied at the end of each stage
 	if modelSpecs.has_key('checkpointFile') and (modelSpecs['checkpointFile'] is not None):
 		try:
 			os.remove(modelSpecs['checkpointFile'])
 		except IOError:
 			print 'WARNING: error in deleting the check point file: ', modelSpecs['checkpointFile']
-		
-
-    	return resultModel
-
-
-
-##automatically generating a model file name
-def GenerateModelFileName(resultModel):
-
-	prefix = ''
-	verStr ='Model' +  str(int(resultModel['Version']*10)) + '-'
-        if resultModel.has_key('UseTemplate') and resultModel['UseTemplate']:
-                prefix += ('TPL' + verStr)
-        else:
-                prefix += ('Seq' + verStr)
-
-        prefix += resultModel['network'] + '4'
-        prefix += resultModel['responseStr'].replace(';', '-').replace(':','_') 
-
-	if config.UseRawCCM(resultModel):
-		prefix += '-CCM'
-	if config.UseCCMZ(resultModel):
-		prefix += '-CCMZ'
-	if resultModel.has_key('NoWeight4Range') and resultModel['NoWeight4Range']:
-		prefix +='-NoWR'
-	if resultModel.has_key('NoWeight4Label') and resultModel['NoWeight4Label']:
-		prefix +='-NoWL'
-
-	arch = ''
-	#arch +=  'L1D' + str( (sum(resultModel['conv1d_repeats']) + len(resultModel['conv1d_hiddens']) )*2 -1 )  
-	arch += 'L2D' + str( (sum(resultModel['conv2d_repeats']) + len(resultModel['conv2d_hiddens']) )*2 -1 )  
-	#arch += 'Log' + str( (sum(resultModel['logreg_hiddens']) + len(resultModel['logreg_hiddens']) )      )  
-
-	"""
-	if resultModel['network'].startswith('DilatedResNet'):
-		arch += 'W1D' + str(resultModel['conv1d_hwsz']) + 'W2D' 
-		arch += '-'.join(map(str, resultModel['conv2d_hwszs']) )
-		arch += 'Dilation' + '-'.join(map(str, resultModel['conv2d_dilations']) )
-	else:
-		arch += 'W1D' + str(resultModel['halfWinSize_seq']) + 'W2D' + str(resultModel['halfWinSize_matrix'])
-	"""
-	#arch += 'I1D' + str(resultModel['n_in_seq']) + 'I2D' + str(resultModel['n_in_matrix'])
-
-	MID = str(datetime.datetime.today()).split()[0].replace('-', '') + '-' + resultModel['ModelID'] + str(os.getpid())
-	#bias = resultModel['LRbias'] + 'LRbias'
-	##epoch = 'E' + str(resultModel['numEpochs'])
-	##epoch = 'E' 
-	suffix = '.pkl'
-
-	datastr = os.path.basename(resultModel['dataset'][0]).split('.')[0:-2]
-	datastr = ''.join(datastr)
-
-	#components = [ prefix, arch+bias+epoch, datastr, pid, resultModel['algorithm'] ]
-	components = [ prefix, arch, datastr, MID, resultModel['algorithm'] ]
-	filename = os.path.join('LocalModels/', '-'.join(components) + suffix )
-
-	if not os.path.exists('LocalModels/'):
-    		os.makedirs('LocalModels/')
-
-	return filename
-
-## each file shall end with .txt or .list
-def ParseListFile(listFiles):
-
-	names = []
-	for f in listFiles:
-		if not os.path.isfile(f):
-			print 'ERROR: cannot find the file: ', f
-			exit(1)
-
-		if not ( f.endswith('.txt') or f.endswith('.list') ):
-			print 'ERROR: the expected list file shall only end with .txt or .list: ', f
-			exit(1)
-
-		fh = open(f, 'r')
-		c = [ line.strip() for line in list(fh) ]
-		fh.close()
-		names.extend(c)
-
-	return set(names)
-
-## ratio is represented as a string
-## if ratio is an integer, it shall be interpreted as the number of samples, otherwise the ratio of samples
-def SampleProteinNames(whole, ratio, exclude=None):
-	if ratio.isdigit():
-		numSamples = np.int32(ratio)
-	else:
-		numSamples = np.int32( len(whole) * np.float32(ratio) )
-
-	if exclude is not None:
-		names = list( set(whole) - set(exclude) )
-	else:
-		names = copy.deepcopy( list(whole) )
-
-	if numSamples > (1.1*len(names) ):
-		print 'ERROR: the number of proteins to be sampled greatly exceeds the total number of proteins available: ', numSamples
-		print 'The total number of proteins: ', len(names)
-		exit(1)
-	elif numSamples > len(names):
-		print 'WARNING: the number of proteins to be sampled exceeds the total number of proteins available: ', numSamples
-		print 'The total number of proteins: ', len(names)
-		print 'All the available proteins will be used'
-		numSamples = len(names)
-
-	if numSamples < 1:
-		print 'ERROR: the number of proteins to be sampled is 0 '
-		exit(1)
-
-	random.shuffle(names)
-
-	return set( names[:numSamples] )
-
 	
+	## remove theano variables from modelSpecs
+	keys4removal = ['variable4train', 'variable4validate', 'params', 'params4mean', 'params4var', 'paramL2', 'regularizer', 'topAcc', 'errors', 'labelList', 'weightList', 'trainByRefLoss']
+	for k in keys4removal:
+		if modelSpecs.has_key(k):
+			del modelSpecs[k]
+	
+    	return resultModel
 
 def main(argv):
 
@@ -799,41 +762,63 @@ def main(argv):
 	modelSpecs = ParseCommandLine.ParseArguments(argv, modelSpecs)
 
 	startTime = datetime.datetime.now()
-	
-	## load the datasets. Data is a list of proteins and each protein is represented as a dict()
-	Data = DataProcessor.LoadDistanceFeatures(modelSpecs['dataset'], modelSpecs=modelSpecs )
-        print '#Data: ', len(Data)
-	allProteins = [ d['name'] for d in Data ]
 
-	## Each protein in trainData contains three or four components: seqFeatures, matrixFeatures, embedFeatures and label matrix
-        ## embedFeatures is derived from seqFeatures. Users only provide seqFeatures, matrixFeatures, and distance matrix.
-        modelSpecs['n_in_seq'] = Data[0]['seqFeatures'].shape[1]
-        modelSpecs['n_in_matrix'] = Data[0]['matrixFeatures'].shape[2] + Data[0]['matrixFeatures_nomean'].shape[2]
-        if Data[0].has_key('embedFeatures'):
-                modelSpecs['n_in_embed'] = Data[0]['embedFeatures'].shape[1]
+	trainMetaData = DataProcessor.LoadMetaData(modelSpecs['trainFile'] )
+	FeatureUtils.DetermineFeatureDimensionBySampling(trainMetaData, modelSpecs)
+	## calculate label distribution and weight at the very beginning
+	print 'Calculating label distribution...'
+	LabelUtils.CalcLabelDistributionNWeightBySampling(trainMetaData, modelSpecs)
 
-	print 'Preparing training data...'
-	## extract trainData from Data
-	if len(modelSpecs['trainFile'])==1 and IsNumber(modelSpecs['trainFile'][0]):
-		trainProteinSet = SampleProteinNames(allProteins, modelSpecs['trainFile'][0])
-	else:
-		trainProteinSet = ParseListFile(modelSpecs['trainFile'])
-	trainData = [ d for d in Data if d['name'] in trainProteinSet ]
-	print '#trainData: ', len(trainData)
-	modelSpecs['trainProteins'] = trainProteinSet
-	modelSpecs['numOfTrainProteins']= len(trainData)
+	if config.TrainByRefLoss(modelSpecs) or config.UseRefState(modelSpecs):
+		print 'Calculating feature expection by sampling...'
+		FeatureUtils.CalcFeatureExpectBySampling(trainMetaData, modelSpecs)
 
+	## trainMetaData is a list of groups. Each group contains a set of related proteins (seq-template alignments) and files for their features
+	trainDataLocation = DataProcessor.SampleProteinInfo(trainMetaData)
+        trainSeqData = DataProcessor.SplitData2Batches(trainDataLocation, numDataPoints=modelSpecs['minibatchSize'], modelSpecs=modelSpecs)
+	print 'approximate #batches for train data: ', len(trainSeqData)
 
-	## the results are saved to modelSpecs
-	LabelUtils.CalcLabelDistributionAndWeight(trainData, modelSpecs)
+	#global trainSharedQ, stopTrainDataLoader, trainDataLoaders, trainSharedLabelPool, trainSharedLabelWeightPool
+	global trainSharedQ, stopTrainDataLoader, trainDataLoaders
+	trainSharedQ = multiprocessing.Queue(config.QSize(modelSpecs) )
+	stopTrainDataLoader = multiprocessing.Event()
+	#trainSharedLabelPool = multiprocessing.Manager().dict()
+	#trainSharedLabelWeightPool = multiprocessing.Manager().dict()
+	#print stopTrainDataLoader
 
-	##the results are also saved to modelSpecs
-	FeatureUtils.CalcExpectedValueOfFeatures(trainData, modelSpecs)
+	numTrainDataLoaders = config.NumTrainDataLoaders(modelSpecs)
+	metaDatas = DataProcessor.SplitMetaData(trainMetaData, numTrainDataLoaders)
 
-        print 'Preparing batch data for training...'
-        groupSize = modelSpecs['minibatchSize']
-        trainSeqDataset = DataProcessor.SplitData2Batches(data=trainData, numDataPoints=groupSize, modelSpecs=modelSpecs)
-        print "#trainData minibatches:", len(trainSeqDataset)
+	trainDataLoaders = []
+	for i, metaData in zip(xrange(numTrainDataLoaders), metaDatas):
+        	#trainDataLoader = multiprocessing.Process(name='TrainDataLoader ' + str(i) + ' for ' + str(os.getpid()), target=TrainUtils.TrainDataLoader, args=(trainSharedQ, metaData, modelSpecs, True, True))
+        	trainDataLoader = multiprocessing.Process(name='TrainDataLoader ' + str(i) + ' for ' + str(os.getpid()), target=TrainUtils.TrainDataLoader2, args=(trainSharedQ, stopTrainDataLoader, metaData, modelSpecs, True, True))
+        	#trainDataLoader = multiprocessing.Process(name='TrainDataLoader ' + str(i) + ' for ' + str(os.getpid()), target=TrainUtils.TrainDataLoader3, args=(trainSharedQ, trainSharedLabelPool, trainSharedLabelWeightPool, stopTrainDataLoader, metaData, modelSpecs, True, True))
+		trainDataLoader.daemon=True
+		trainDataLoaders.append(trainDataLoader)
+
+        print 'start the train data loaders...'
+	for trainDataLoader in trainDataLoaders:
+        	trainDataLoader.start()
+
+	validMetaData = DataProcessor.LoadMetaData(modelSpecs['validFile'])
+	validDataLocation = DataProcessor.SampleProteinInfo(validMetaData)
+
+	## split data into batches, but do not load the real data from disk
+	#validSeqData = DataProcessor.SplitData2Batches(validDataLocation, numDataPoints=modelSpecs['minibatchSize'], modelSpecs=modelSpecs)
+	validSeqData = DataProcessor.SplitData2Batches(validDataLocation, numDataPoints=500*500, modelSpecs=modelSpecs)
+	print '#batches for validation data: ', len(validSeqData)
+
+	global validSharedQ, validDataLoader, stopValidDataLoader
+	validSharedQ = multiprocessing.Queue(len(validSeqData) )
+	stopValidDataLoader = multiprocessing.Event()
+	#print stopValidDataLoader
+	## shared memory is a limited resource, so avoid using it as much as possible
+	## here we do not use shared array for validation data since we only need to load it once
+        #validDataLoader = multiprocessing.Process(name='ValidDataLoader for '+str(os.getpid()), target=TrainUtils.ValidDataLoader, args=(validSharedQ, validSeqData, modelSpecs, True, False))
+        validDataLoader = multiprocessing.Process(name='ValidDataLoader for '+str(os.getpid()), target=TrainUtils.ValidDataLoader2, args=(validSharedQ, stopValidDataLoader, validSeqData, modelSpecs, True, False))
+        print 'start the validation data loader...'
+        validDataLoader.start()
 
 	"""
 	if modelSpecs.has_key('ScaleLoss4Cost') and (modelSpecs['ScaleLoss4Cost'] is True):
@@ -842,59 +827,26 @@ def main(argv):
 		print 'maxWeightDeviation=', maxDeviation
 	"""
 
-	print 'Preparing validation data ...'
-
-	if len(modelSpecs['validFile'])==1 and IsNumber(modelSpecs['validFile'][0]):
-		validProteinSet = SampleProteinNames(allProteins, modelSpecs['validFile'][0], exclude=trainProteinSet)
-	else:
-		validProteinSet = ParseListFile(modelSpecs['validFile'])
-
-	overlapSet = validProteinSet.intersection(trainProteinSet)
-	if len(overlapSet) > min(10, 0.1*len(validProteinSet) ):
-		print 'WARNING: maybe too much overlap between the validation and training sets: ', len(overlapSet)
-		
-	validData = [ d for d in Data if d['name'] in validProteinSet ]
-	modelSpecs['validProteins'] = validProteinSet
-	print '#validData: ', len(validData)
-	modelSpecs['numOfValidProteins']= len(validData)
-        validSeqDataset = DataProcessor.SplitData2Batches(data=validData, numDataPoints=groupSize, modelSpecs=modelSpecs)
-        print "#validData minibatches:", len(validSeqDataset)
-
-
-        predSeqDataset = None
-	if modelSpecs['predFile'] is not None:
-		if len(modelSpecs['predFile'])==1 and IsNumber(modelSpecs['predFile'][0]):
-			predProteinSet = SampleProteinNames(allProteins, modelSpecs['predFile'][0], exclude=trainProteinSet.union(validProteinSet) )
-			predData = [ d for d in Data if d['name'] in predProteinSet ]
-		else:
-			## divide all pred files into two groups, one is for list files and the other for PKL files
-			listFiles = [ pfile for pfile in modelSpecs['predFile'] if pfile.endswith('.txt') or pfile.endswith('.list') ]
-			pklFiles = [ pfile for pfile in modelSpecs['predFile'] if pfile.endswith('.pkl') ]
-            		predDataPKL = DataProcessor.LoadDistanceFeatures(pklFiles, modelSpecs=modelSpecs, forTrainValidation=False )
-			predProteinSet = ParseListFile(listFiles)
-			predDataTXT = [ d for d in Data if d['name'] in predProteinSet ]
-			predData = predDataPKL + predDataTXT
-
-	    	print '#predData: ', len(predData)
-	 	predSeqDataset = DataProcessor.SplitData2Batches(data=predData, numDataPoints=624, modelSpecs=modelSpecs)
-                print "#predData minibatches:", len(predSeqDataset)
-
-
 	beforeTrainTime = datetime.datetime.now()
-	print 'time spent on loading data:', beforeTrainTime - startTime
+	print 'time spent before training :', beforeTrainTime - startTime
 
-        result = TrainModel(modelSpecs=modelSpecs, trainSeqData=trainSeqDataset, validSeqData=validSeqDataset, predSeqData=predSeqDataset)
+        result = TrainModel(modelSpecs=modelSpecs, trainValidData=(trainSeqData, validSeqData))
+
 
         ##merge ModelSpecs and result
         resultModel = modelSpecs.copy()
         resultModel.update(result)
 
-	modelFile = GenerateModelFileName(resultModel)
+	modelFile = TrainUtils.GenerateModelFileName(resultModel)
 	print 'Writing the resultant model to ', modelFile
         cPickle.dump(resultModel, file(modelFile, 'wb'), cPickle.HIGHEST_PROTOCOL)
 
 	afterTrainTime = datetime.datetime.now()
 	print 'time spent on training:', afterTrainTime - beforeTrainTime
+
+	## clean up again
+	print 'Cleaning up again...'
+	Cleanup()
 
 if __name__ == "__main__":
 
@@ -910,5 +862,17 @@ if __name__ == "__main__":
 	seed = ''.join(a)
 	#print 'setting random seed: ', seed
 	random.seed(a=seed)
+
+	validSharedQ = None
+	validData = None 
+	validDataLoader = None
+	stopValidDataLoader = None
+
+	trainSharedQ = None
+	#trainSharedLabelPool = None
+	#trainSharedWeightPool = None
+	#trainData = None
+	trainDataLoaders = []
+	stopTrainDataLoader = None
 
    	main(sys.argv[1:])

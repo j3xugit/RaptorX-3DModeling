@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import getopt
 
@@ -5,7 +6,7 @@ import config
 from utilsNoT import IsNumber
 
 def Usage():
-    	print 'python TrainDistancePredictor.py -N ModelID -n network_type -y response -c conv1d_hiddens -d conv2d_hiddens -l dilation_factors -e logreg_hiddens -w halfWinSize -x method_for_seq2matrix -D dataSet -t trainlist -v validlist -p predlist/predfile -a trainAlgorithm -g regfactors -r restart_file -s minibatchSize -k keyword_value'
+    	print 'python TrainDistancePredictor.py -N ModelID -n network_type -y response -c conv1d_hiddens -d conv2d_hiddens -l dilation_factors -e logreg_hiddens -w halfWinSize -x method_for_seq2matrix -t trainMetaData_json -v validMetaData_json -p predfile_PKL -a trainAlgorithm -g regfactors -r restart_file -s minibatchSize -k keyword_value'
 	print ' '
 	print '-N: optional, specify a model ID (default None), e.g., A, B, 1, 2'
     	print '-n: specify a network type, e.g., ResNet2D or DilatedResNet2D (default). ' 
@@ -37,34 +38,26 @@ def Usage():
 	print '	   The upper bound specifies the size of the max submatrix sampled from the original contact/distance matrix, e.g., 160000 implies the max size is 400*400'
 	print '    Some minibatches may have fewer residue pairs than the lower bound, but all minibatches have at least half of the specified residue pairs, e.g., 90000 implies that a minibatch has at least 90000/2 residue pairs'
 	print ' '
-	print '-D: a list of PKL files for the set of real protein data for train, validation and even prediction'
-    	print '-t: a number or a list of text files for training proteins. The real data is in the dataset specified by the -D option'
-    	print '-v: a number or a list of text files for validation proteins. The real data is in the dataset specified by the -D option'
-    	print '-p: a number or a list of text files or a list of PKL files for test proteins.'
-	print '		If a number is specified for train, valid and test, the real data will be randomly sampled from the overall dataset specified by -D'
-	print '			When the number is a float, it is interpreted as the ratio of proteins to be sampled from the overall dataset'
-	print '			When the number is an integer, it is interprted as the number of proteins to be sampled from the overall dataset'
-	print '		If a text file is provided, data is extracted from the overall dataset by names'
-	print '			The text file shall end with .list or .txt and contains a list of proteins names (each in one row)' 
-	print '		If a PKL file is provided, test data is contained in this PKL file instead of the dataset specified by -D'
-	print '			The PKL file shall end with .pkl'
-	print '		Note that for train/validation data, either a number or a text file is allowed. For test data, either a number or a mix of list/PKL files are allowed.' 
-	print '		When numbers are used, users are responsible to make sure that their sum does not exceed the total number of proteins specified by -D'
+	#print '-D: a list of PKL files for the set of real protein data for train, validation and even prediction'
+    	print '-t: a meta data file (json format) for training proteins. The real data is specified by the meta data'
+	print '		The real data is saved as a PKL file for each protein'
+    	print '-v: a meta data file (json format) for validation proteins. The real data is specified by the meta data'
+    	print '-p: one or several PKL files for test proteins. The files have all the information needed for test proteins '
 	print ' '
     	print '-r: specify a checkpoint file for restart'
-    	print '-k: specify a set of keywords:value pair, e.g., UsePSICOV:no;UsePriorDistancePotential:no;BatchNorm:yes;activation:relu;UseTemplate:yes;TPLMemorySave:yes'
+    	print '-k: specify a set of keywords:value pair, e.g., UsePSICOV:no;UseTemplate:yes;TPLMemorySave:yes'
 
 def ParseArguments(argv, modelSpecs):
 
     	try:
-        	opts, args = getopt.getopt(argv,"N:n:y:D:t:v:p:c:d:e:w:x:a:r:g:s:k:l:z:",["modelID=", "network=","response=","dataset=", "trainfile=","validfile=","predictfile=","conv1d=","conv2d=","logreg_hiddens=","halfWinSize=","seq2matrix=","algorithm=","restartfile=","regfactor=", "minibatchSize=","kvpairs=","dilation=","hwsz="])
+        	opts, args = getopt.getopt(argv,"N:n:y:t:v:p:c:d:e:w:x:a:r:g:s:k:l:z:",["modelID=", "network=","response=", "trainfile=","validfile=","predictfile=","conv1d=","conv2d=","logreg_hiddens=","halfWinSize=","seq2matrix=","algorithm=","restartfile=","regfactor=", "minibatchSize=","kvpairs=","dilation=","hwsz="])
         	print opts, args
     	except getopt.GetoptError:
        		Usage()
         	exit(1)
 
-	## at least a data file shall be provided
-    	if len(opts) < 3:
+	## at least train and validation data files shall be provided
+    	if len(opts) < 4:
        		Usage()
         	exit(1)
 
@@ -197,14 +190,17 @@ def ParseArguments(argv, modelSpecs):
 
 	    		modelSpecs['seq2matrixMode'] = options
 
-		elif opt in ("-D", "--dataset"):
-			modelSpecs['dataset'] = [ f.strip() for f in arg.split(';') ]
+		#elif opt in ("-D", "--dataset"):
+		#	modelSpecs['dataset'] = [ f.strip() for f in arg.split(';') ]
         	elif opt in ("-t", "--trainfile"):
-	    		modelSpecs['trainFile'] = [ f.strip() for f in arg.split(';') ]
+	    		#modelSpecs['trainFile'] = [ f.strip() for f in arg.split(';') ]
+	    		modelSpecs['trainFile'] = arg
         	elif opt in ("-v", "--validfile"):
-	    		modelSpecs['validFile'] = [ f.strip() for f in arg.split(';') ]
+	    		#modelSpecs['validFile'] = [ f.strip() for f in arg.split(';') ]
+	    		modelSpecs['validFile'] = arg
         	elif opt in ("-p", "--predictfile"):
-	    		modelSpecs['predFile'] = [ f.strip() for f in arg.split(';') ]
+	    		#modelSpecs['predFile'] = [ f.strip() for f in arg.split(';') ]
+	    		modelSpecs['predFile'] = arg
 
         	elif opt in ("-c", "--conv1d_hiddens"):
             		fields = arg.split(':')
@@ -261,11 +257,17 @@ def ParseArguments(argv, modelSpecs):
             		modelSpecs['minibatchSize'] = minibatchSize
             		if len(fields) > 1:
                 		modelSpecs['maxbatchSize'] = max(minibatchSize, int(fields[1]) )
+			if len(fields) > 2:
+				modelSpecs['boundingBoxOffset'] = max(0, int(fields[2]) )
 
 		elif opt in ("-k", "--kvpairs"):
 	     		items = [ i.strip() for i in arg.split(';') ]
 	     		for item in items:
 				k, v = item.split(':')
+				if k not in modelSpecs.keys():
+					print 'FATAL ERROR: not implemented options: ', k
+					exit(1)
+
 				modelSpecs[k] = v
 				if IsNumber(v):
 					modelSpecs[k] = np.float32(v)
@@ -282,10 +284,6 @@ def ParseArguments(argv, modelSpecs):
 		    			else:
 						print 'allowed activation functions: ', config.allActivations
 						exit(1)
-
-				if k not in modelSpecs.keys():
-					print 'FATAL ERROR: not implemented options: ', k
-					exit(1)
 
 				print 'Extra model specfication: ', k, modelSpecs[k]
 
@@ -312,17 +310,20 @@ def ParseArguments(argv, modelSpecs):
 		modelSpecs['seq2matrixMode']['SeqOnly'] = modelSpecs['seq2matrixMode']['Seq+SS']
 		modelSpecs['seq2matrixMode'].pop('Seq+SS')
 
+	"""
     	if modelSpecs['dataset'] is None:
        		print "Please provide one or more PKL files for the overall dataset for training, validation and even prediction"
         	exit(1)
+	"""
 
-    	if modelSpecs['trainFile'] is None:
-       		print "Please provide one or more training files ending with .pkl and separated by ;"
+    	if modelSpecs['trainFile'] is None or not os.path.isfile(modelSpecs['trainFile']):
+       		print "Please provide one file ending with .json for training meta data"
         	exit(1)
 
-    	if modelSpecs['validFile'] is None:
-       		print "Please provide one or more validation files ending with .pkl and separated by ;"
+    	if modelSpecs['validFile'] is None or not os.path.isfile(modelSpecs['validFile']):
+       		print "Please provide one file ending with .json for validation meta data"
         	exit(1)
+
 
     	if modelSpecs['maxbatchSize'] < modelSpecs['minibatchSize']:
 		print 'The largest number of data points in a batch is smaller than the smallest number. Please reset them.'
