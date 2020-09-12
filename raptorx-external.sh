@@ -5,10 +5,10 @@ export PATH=$HHDIR/bin:$HHDIR/scripts:$PATH
 ## the location of the HHM database to be searched by HHblits for MSA generation. Needed unless you already have an MSA and do not want to generate any new MSAs.
 export HHDB=/mnt/data/RaptorXCommon/HHblits/DB/uniref30_2020_02/UniRef30_2020_02
 
-## the location of the metagenome database file to be searched by hmmsearch. Not needed unless you want to run metagenome database search.
+## the location of the metagenome database file to be searched by hmmsearch. Not needed unless you want to run metagenome database search to build MSAs.
 export MetaDB=/mnt/data/conmod_databases/metaclust_series/metaclust_50.fasta
 
-## the location of uniref database to be searched by jackhmmer. Not needed unless you want to run jackhmmer for sequence homology search.
+## the location of uniref database to be searched by jackhmmer. Not needed unless you want to run jackhmmer to build MSAs.
 export JackDB=/mnt/data/conmod_databases/uniref100_series/uniref90_2020_06.fasta
 
 ## the following environmental varaibles are not needed unless you want to do comparative modeling
