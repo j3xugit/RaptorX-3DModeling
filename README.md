@@ -5,7 +5,7 @@
 
 RaptorX predicts protein contact/distance/orientation and local structure properties (e.g, secondary structure and phi/psi angles) by deep convolutional residual networks.
 It also builds the 3D model of a protein sequence using predicted distance/orientation and phi/psi angles.
-It is mainly tested on the Linux distribution CentOS (>6.0) and Python 2.7, but can work with Python 3 through a virtual environment (https://docs.python.org/3/tutorial/venv.html).
+It is mainly tested on the Linux distribution CentOS (>6.0) and Python 2.7, but you may also run it if you already have Python 3 installed. 
 A version directly supporting Python 3 and tensorflow will be available in a few months. 
 This package is also incorporated into our protein structure prediction web server at http://raptorx.uchicago.edu/, which is publicly available for both academia and industry.
 If you only want to predict structures for several protein sequences, it is more convenient to use our web server instead of installing this package.
@@ -50,7 +50,8 @@ To predict contact/distance/orientation and fold a protein, you may simply run R
 
 If you have not installed any anaconda or miniconda, you may directly install anaconda or miniconda for Python 2.7.
 If you have already installed anaconda/miniconda for Python 3, you may create a virtual enviroment RaptorX by running "conda create --name RaptorX python=2". 
-Afterwards, switch to this virtual environment to install the required packages and run RaptorX. 
+Afterwards, switch to this virtual environment by command "conda activate RaptorX" to install the required packages and run RaptorX. 
+See https://docs.python.org/3/tutorial/venv.html for the introduction of virtual environment.
 
 Install numpy by "conda install numpy".
 Install msgpack-python by "conda install -c anaconda msgpack-python"; it may not work if you intall it through pip.
