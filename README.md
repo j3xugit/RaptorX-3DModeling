@@ -16,6 +16,8 @@ If you only want to predict structures for several protein sequences, it is more
 
 * There is no restriction on the usage of this package, but without explicit permission, it shall not be used for commercial purpose and to set up a similar web server for protein folding.
 
+* contact: jinboxu@gmail.com
+
 ### How to set up? ###
 
 Download this package by "git clone" and install it anywhere in your own account, e.g., $HOME/RaptorX-3DModeling/.
@@ -282,7 +284,7 @@ Several scripts in /home/jinbo/RaptorX-3DModeling/DL4PropertyPrediction/Scripts/
 
 2) When you already have predicted distance/orientation files (ending with .predictedDistMatrix.pkl) and phi/psi file (ending with .predictedProperties.pkl), you may use them to fold a protein by several scripts. For example, in RaptorX-3DModeling/Folding/, there are LocalFoldNRelaxOneTarget.sh, ParallelFoldNRelaxOneTarget.sh, SRunFoldNRelaxOneTarget.sh and SlurmFoldNRelaxOneTarget.sh, developed for different machine types (e.g., Linux workstation and slurm cluster). In aptorX-3DModeling/Folding/Scripts4Rosetta/, there are FoldNRelaxOneTarget.sh, FoldNRelaxTargets.sh, and RelaxOneTarget.sh, which mainly run on a Linux workstation.
 
-## Advanced Usage (to be updated)
+## Advanced Usage 
 
 * Run scripts on several machines without manually copying data
 
@@ -330,7 +332,7 @@ On raptorx4, raptorx5 and raptorx6 machines, you may simply link the data path t
 Please do not use cuda0 on thee three machines to run the training algorithm. They are reserved for our web server.
 
 
-### Develop your own deep network ###
+### Develop your own deep network (to be updated) ###
 
 
 To incorporate your own deep network architeture into the contact/distance prediction module, please follow the below procedure:
