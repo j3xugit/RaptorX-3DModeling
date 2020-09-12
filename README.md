@@ -4,9 +4,9 @@
 ### What is this repository for? ###
 
 RaptorX predicts protein contact/distance/orientation and local structure properties (e.g, secondary structure and phi/psi angles) by deep convolutional residual networks.
-It also predicts the 3D structure of a protein sequence using predicted distance/orientation and phi/psi angles.
-It is mainly tested on the Linux distribution CentOS (>6.0) and Python 2.7, but can work with Python 3 by creating a virtual environment.
-A version supporting Python 3 and tensorflow will be available in a few months. 
+It also builds the 3D model of a protein sequence using predicted distance/orientation and phi/psi angles.
+It is mainly tested on the Linux distribution CentOS (>6.0) and Python 2.7, but can work with Python 3 through a virtual environment (https://docs.python.org/3/tutorial/venv.html).
+A version directly supporting Python 3 and tensorflow will be available in a few months. 
 This package is also incorporated into our protein structure prediction web server at http://raptorx.uchicago.edu/, which is publicly available for both academia and industry.
 If you only want to predict structures for several protein sequences, it is more convenient to use our web server instead of installing this package.
 
