@@ -8,7 +8,7 @@ It also predicts the 3D structure of a protein sequence using predicted distance
 It is mainly tested on the Linux distribution CentOS (>6.0) and Python 2.7, but can work with Python 3 by creating a virtual environment.
 A version supporting Python 3 and tensorflow will be available in a few months. 
 This package is also incorporated into our protein structure prediction web server at http://raptorx.uchicago.edu/, which is publicly available for both academia and industry.
-If you only want to predict structures for several protein sequences, it is more convenient to use our web server.
+If you only want to predict structures for several protein sequences, it is more convenient to use our web server instead of installing this package.
 
 * Version
 
@@ -19,7 +19,7 @@ If you only want to predict structures for several protein sequences, it is more
 ### How to set up? ###
 
 Download this package by "git clone" and install it anywhere in your own account, e.g., $HOME/RaptorX-3DModeling/.
-It contains the following important files and subfolders (and a few others):
+It contains the following files and subfolders (and a few others):
 
 BuildFeatures/
 
@@ -37,10 +37,12 @@ README.md
 
 Server/
 
-Meanwhile, BuildFeatures/ is for generating MSAs and input features for angle/contact/distance/orientation prediction,
-DL4DistancePrediction4/ for contact/distance/orientation prediction, DL4PropertyPrediction/ for property prediction, and Folding/ for 3D modeling.
+This RaptorX package consists of 4 major modules: BuildFeatures/ for generating multiple sequence alignment (MSAs) and input features for angle/contact/distance/orientation prediction,
+DL4DistancePrediction4/ for contact/distance/orientation prediction, DL4PropertyPrediction/ for local structure property prediction, and Folding/ for building 3D models.
 
-** Required external packages
+To predict contact/distance/orientation and fold a protein, you may simply run RaptorX-3DModeling/Server/RaptorXFolder.sh, but before doing this some external packages and databases shall be installed and configured.
+
+## Required external packages for all modules ##
 
 1) anaconda or miniconda for Python 2.7
 
@@ -53,48 +55,48 @@ Install msgpack-python by "conda install -c anaconda msgpack-python"; it may not
 
 2) Biopython (https://biopython.org/)
 
-Needed for both contact/distance/orientation predicton and 3D model building.
-Please install by running "pip install biopython==1.76"; 
-A newer version may not work with Python 2.7.
+Needed for both contact/distance/orientation predicton and 3D model building
+install by running "pip install biopython==1.76"
+A newer version of Biopython may not support Python 2.7.
 
-** Required packages for contact/distance/orientation/angle prediction
+## Required packages for contact/distance/orientation/angle prediction ##
 
 1) Pillow
 
-Needed for visualizing predicted contact and distance.
-You may install it by running "pip install Pillow".
+Needed for visualizing predicted contact and distance; install by running "pip install Pillow"
 
 2) pygpu and Theano 1.0 (http://deeplearning.net/software/theano/install.html)
 
-Needed for train and run deep learning models. 
-To install them, run "conda install numpy scipy mkl" and then "conda install theano pygpu" .
+Needed for train and run deep learning models; install by running "conda install numpy scipy mkl" and then "conda install theano pygpu" .
 
 Please make sure that the CUDA toolkits and CUDNN library have been installed on your machine with GPUs.
 Set the environment variable CUDA_ROOT to where cuda is installed, e.g., export CUDA_ROOT=/usr/local/cuda. 
 Make sure that the header and lib64 files of CUDNN are in CUDA_ROOT/include and CUDA_ROOT/lib64, respectively. 
-(Theano 1.0 works with CUDA 10.0 and cudnn 7.6. You may use other versions of CUDA and CUDNN for your own GPUs)
+(Theano 1.0 works with CUDA 10.0 and cudnn 7.6. Other versions of CUDA and CUDNN may also work)
 
 3) shared_ndarray (https://github.com/crowsonkb/shared_ndarray.git)
 
 Needed for train and run deep learning models for distance/orientation prediction.
-Download this package by "git clone https://github.com/crowsonkb/shared_ndarray.git";
+Download by "git clone https://github.com/crowsonkb/shared_ndarray.git";
 cd to shared_ndarray/ and then run "python setup.py install".
 
-** Required tools and sequence databases for MSA generation
+## Required tools and sequence databases for MSA generation ##
+
+Note that HHblits (and its seq databases), uniref90 and metagenome database are already available on RX machines, no need to reinstall them to run RaptorX on these machines.
 
 1) Install HHblits for MSA generation (https://github.com/soedinglab/hh-suite)
 
-In addition to the HHsuite package itself, please also download a sequence database specific to HHsuite, 
-e.g. UniRef30_2020_03_hhsuite.tar.gz at http://wwwuser.gwdg.de/~compbiol/uniclust/2020_03/
+In addition to the HHsuite package itself, please download a sequence database specific to HHsuite and unpack it into a folder, 
+e.g. UniRef30_2020_03_hhsuite.tar.gz at http://wwwuser.gwdg.de/~compbiol/uniclust/2020_03/.
 
 2) Install EVcouplings for generating MSAs by jackhmmer (optional, but not recommended since it is too slow)
 
-It is available at https://github.com/debbiemarkslab/EVcouplings . Although the whole package is installed, only the MSA generation module will be used.
+It is available at https://github.com/debbiemarkslab/EVcouplings . Although installing the whole package, only the MSA generation module will be used.
 Step 1: Download the package by running "git clone https://github.com/debbiemarkslab/EVcouplings.git". Suppose that it is located at $HOME/EVcouplings. 
 Step 2: Run "conda create -n evfold anaconda python=3" to create a virtual environment and then switch to this environment by running "conda activate evfold".
 Step 3: cd to $HOME/EVcouplings and run "python setup.py install" to install the whole package.
 
-Note that although EVcouplings runs on python 3, but this version of RaptorX shall be run on python 2.
+Note that EVcouplings runs on python 3 while this version of RaptorX runs on python 2.
 Without jackhmmer, you may still run RaptorX by generating MSAs using HHblits only.
 The sequence database for jackhmmer is uniref90.fasta, which can be downloaded from UniProt.
 
@@ -104,7 +106,7 @@ Download the data file metaclust_50.fasta at https://metaclust.mmseqs.org/curren
 
 4) Revise the file RaptorX-3DModeling/raptorx-external.sh to setup the path information for the above MSA building tools and databases.
 
-** Required packages for building protein 3D models
+## Required packages for building protein 3D models ##
 
 1) PyRosetta (http://www.pyrosetta.org/dow)
 
@@ -118,7 +120,7 @@ Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.s
 Run "which parallel" to see if GNU parallel is available or not.
 If GNU parallel cannot be installed, you may still run folding jobs using other scripts.
 
-** Configuration and export of environment variables:
+## Configuration and export of environment variables ##
 
 1) ModelingHome: This is where the whole package is installed, e.g., $HOME/RaptorX-3DModeling.
 Please add ModelingHome to the environmental variable PYTHONPATH.
@@ -133,7 +135,6 @@ Please add ModelingHome to the environmental variable PYTHONPATH.
 
 6) Please revise the sequence database path information and HHblits install folder in $ModelingHome/raptorx-external.sh 
 and then add ". $ModelingHome/raptorx-external.sh " to the .bashrc file in your own Linux account to set enviromental variables related to MSA generation.
-
 
 Supposing that the RaptorX-3DModeling package is located at $HOME/RaptorX-3DModeling/,
 below is an example configuration that can be pasted to the .bashrc file if you are using the bash shell.
@@ -158,10 +159,12 @@ export CUDA_ROOT=/usr/local/cuda/
 
 If you are using csh shell, you may add a similar setting to the file .cshrc in your home directory.
 
-** Installation of deep learning models for contact/distance/orientation/angle prediction
+## Install deep learning models for contact/distance/orientation/angle prediction ##
 
-The deep learning model files are big (each 100-200M). You may download them at http://raptorx.uchicago.edu/download/ .
+The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). They are available at http://raptorx.uchicago.edu/download/ .
+
 1) The package RXDeepModels4DistOri-FM.tar.gz has 6 models for contact/distance/orientation/ prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4DistancePredHome/models/
+
 1) The package RXDeepModels4Property.tar.gz has 3 deep models for Phi/Psi angle prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4PropertyPredHome/models/
 
 ## Basic Usage

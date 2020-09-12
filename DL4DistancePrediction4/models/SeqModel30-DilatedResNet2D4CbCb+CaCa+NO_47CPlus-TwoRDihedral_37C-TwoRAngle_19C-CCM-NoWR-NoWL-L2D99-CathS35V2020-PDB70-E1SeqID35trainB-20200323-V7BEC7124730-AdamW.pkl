@@ -1,1 +1,0 @@
-/mnt/data/RaptorXCommon/TrainTestData/Distance_Contact_TrainData/Jinbo_Folder/result4HBBeta/V3Models/SeqModel30-DilatedResNet2D4CbCb+CaCa+NO_47CPlus-TwoRDihedral_37C-TwoRAngle_19C-CCM-NoWR-NoWL-L2D99-CathS35V2020-PDB70-E1SeqID35trainB-20200323-V7BEC7124730-AdamW.pkl

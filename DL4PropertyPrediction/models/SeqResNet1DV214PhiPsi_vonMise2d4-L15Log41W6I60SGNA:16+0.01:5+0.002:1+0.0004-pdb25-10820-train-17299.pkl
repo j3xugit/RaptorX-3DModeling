@@ -1,1 +1,0 @@
-/mnt/data/RaptorXCommon/TrainTestData/ProteinProperty_Project/Jinbo_Folder/result4property/Models/SeqResNet1DV214PhiPsi_vonMise2d4-L15Log41W6I60SGNA:16+0.01:5+0.002:1+0.0004-pdb25-10820-train-17299.pkl

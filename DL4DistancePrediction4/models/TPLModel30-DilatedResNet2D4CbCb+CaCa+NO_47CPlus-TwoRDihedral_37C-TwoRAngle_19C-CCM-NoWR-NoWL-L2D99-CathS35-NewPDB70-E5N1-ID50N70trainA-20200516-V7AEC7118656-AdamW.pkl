@@ -1,1 +1,0 @@
-/mnt/data/RaptorXCommon/TrainTestData/Distance_Contact_TrainData/Jinbo_Folder/result4HBBeta/V3Models/TPLModel30-DilatedResNet2D4CbCb+CaCa+NO_47CPlus-TwoRDihedral_37C-TwoRAngle_19C-CCM-NoWR-NoWL-L2D99-CathS35-NewPDB70-E5N1-ID50N70trainA-20200516-V7AEC7118656-AdamW.pkl
