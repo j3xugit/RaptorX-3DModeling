@@ -140,8 +140,8 @@ You may run shell script RaptorXFolder.sh in RaptorX-3DModeling/Server/ to predi
 The input can be a protein sequence in FASTA format (ending with .fasta or .seq) or an MSA file in a3m format (ending with .a3m).
 In the input file, an amino acid shall be represented by a capital letter instead of a 3-letter code.
 
-NOTE that before running RaptorXFolder.sh, please make sure the environmental variable CUDA_ROOT and those in RaptorX-3DModeling/raptorx-external.sh is correctly set. 
-However, before explicitly running any other shell scripts or python code, you will need to set and export all needed environmental variables described in the below section "setup and export of environment variables".
+NOTE that to run RaptorXFolder.sh, you just need to make sure that the environmental variable CUDA_ROOT and those in RaptorX-3DModeling/raptorx-external.sh are correctly set. 
+However, to explicitly run any other shell scripts or code, you will need to set and export all needed environmental variables described in the below section "setup and export of environment variables".
 
 Running RaptorXFolder.sh (and other shell scripts in this package) without any arguments will show its help information. Below are some scenarios.
 
@@ -177,7 +177,7 @@ All the result files are saved to a folder target_OUT/ where target is the prote
 6) target-SpickerResults/ contains the clustering results of the decoys.
 
 It is possible to run RaptorXFolder.sh on several machines, each in charge of one major module (MSA generation, feature generation and distance/orientation prediction, 3D model building),
-without requiring you to manually copy data among different machines. This will be explained later.
+without requiring you to manually copy data among different machines. This will be explained in section "Advanced Usage".
 
 ## References
 
