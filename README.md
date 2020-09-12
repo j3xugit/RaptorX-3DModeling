@@ -53,16 +53,16 @@ Install msgpack-python by "conda install -c anaconda msgpack-python"; it may not
 
 2) Biopython (https://biopython.org/)
 
-Needed for both contact/distance/orientation predicton and 3D model building
-install by running "pip install biopython==1.76"
-A newer version of Biopython may not support Python 2.7.
+Needed for both contact/distance/orientation predicton and 3D model building.
+Please install by running "pip install biopython==1.76"; 
+A newer version may not work with Python 2.7.
 
 ** Required packages for contact/distance/orientation/angle prediction
 
 1) Pillow
 
 Needed for visualizing predicted contact and distance.
-install by running "pip install Pillow"
+You may install it by running "pip install Pillow".
 
 2) pygpu and Theano 1.0 (http://deeplearning.net/software/theano/install.html)
 
