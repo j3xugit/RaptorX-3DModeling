@@ -185,7 +185,7 @@ without requiring you to manually copy data among different machines. This will 
 
 4. Folding Membrane Proteins by Deep Transfer Learning. Cell Systems, September 2017.
 
-## setup and export of environment variables ##
+## Setup and export of environment variables ##
 
 1) ModelingHome: This is where the whole package is installed, e.g., $HOME/RaptorX-3DModeling.
 Please add ModelingHome to the environmental variable PYTHONPATH.
@@ -324,7 +324,7 @@ To print out predicted contact matrix in text format, run "DL4DistancePrediction
 This will generate two text files 1pazA.CASP.rr and 1pazA.CM.txt.
 
 
-** How to run the training (to be updated)
+## How to train a new model (to be updated) ##
 
 To train a contact/distance prediction deep network, please go to $DL4DistancePredHome/Work/ and run the shell script TrainCbCbEC25CL51-Adam.sh.
 Before running the shell script, please make sure that you set the path of the training and test data correctly.
