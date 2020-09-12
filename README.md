@@ -120,45 +120,6 @@ Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.s
 Run "which parallel" to see if GNU parallel is available or not.
 If GNU parallel is not installed, you may still run folding jobs using other scripts.
 
-## Configuration and export of environment variables ##
-
-1) ModelingHome: This is where the whole package is installed, e.g., $HOME/RaptorX-3DModeling.
-Please add ModelingHome to the environmental variable PYTHONPATH.
-
-2) DistFeatureHome=$ModelingHome/BuildFeatures/ for generating MSAs and input features.
-
-3) DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/ for predicting local structure properties such as Phi/Psi angles.
-
-4) DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/ for contact/distance/orientation prediction. 
-
-5) DistanceFoldingHome=$ModelingHome/Folding/ for building 3D models
-
-6) Please revise the sequence database path information and HHblits install folder in $ModelingHome/raptorx-external.sh 
-and then add ". $ModelingHome/raptorx-external.sh " to the .bashrc file in your own Linux account to set enviromental variables related to MSA generation.
-
-Supposing that the RaptorX-3DModeling package is located at $HOME/RaptorX-3DModeling/,
-below is an example configuration that can be pasted to the .bashrc file (when your account is using the bash shell).
-
-export ModelingHome=$HOME/RaptorX-3DModeling/
-
-. $ModelingHome/raptorx-external.sh
-
-export DistFeatureHome=$ModelingHome/BuildFeatures/
-
-export DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/
-
-export DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/
-
-export DistanceFoldingHome=$ModelingHome/Folding/
-
-export PYTHONPATH=$ModelingHome:$PYTHONPATH
-
-export PATH=$ModelingHome/bin:$PATH
-
-export CUDA_ROOT=/usr/local/cuda/
-
-If you are using csh shell, you may add a similar setting to the file .cshrc in your home directory.
-
 ## Install deep learning models for contact/distance/orientation/angle prediction ##
 
 The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). They are available at http://raptorx.uchicago.edu/download/ . Later we will also upload these model files to a public data repository website.
@@ -172,7 +133,11 @@ The deep learning model files for contact/distance/orientation prediction are bi
 You may run shell script RaptorXFolder.sh in RaptorX-3DModeling/Server/ to predict angle/contact/distance/orientation and/or fold a protein. 
 The input can be a protein sequence in FASTA format (ending with .fasta or .seq) or an MSA file in a3m format (ending with .a3m).
 In the input file, an amino acid shall be represented by a capital letter instead of a 3-letter code.
-Run RaptorXFolder.sh (and other shell scripts in this package) without any arguments will show its help information. Below are some scenarios.
+
+NOTE that you do not have to set and export any environmental variable to run RaptorXFolder.sh except CUDA_ROOT and those in RaptorX-3DModeling/raptorx-external.sh. 
+However, before explicitly running any other shell scripts or python code, please set up all needed environmental variables described in the below section "setup and export of environment variables".
+
+Running RaptorXFolder.sh (and other shell scripts in this package) without any arguments will show its help information. Below are some scenarios.
 
 1) When you already have a multiple sequence alignment in a3m format, please use option "-m 0";
 
@@ -217,6 +182,44 @@ without requiring you to manually copy data among different machines. This will 
 3. Accurate De Novo Prediction of Protein Contact Map by Ultra-Deep Learning Model. PLoS CB, Jan 2017
 
 4. Folding Membrane Proteins by Deep Transfer Learning. Cell Systems, September 2017.
+
+## setup and export of environment variables ##
+
+1) ModelingHome: This is where the whole package is installed, e.g., $HOME/RaptorX-3DModeling.
+Please add ModelingHome to the environmental variable PYTHONPATH.
+
+2) DistFeatureHome=$ModelingHome/BuildFeatures/ for generating MSAs and input features.
+
+3) DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/ for predicting local structure properties such as Phi/Psi angles.
+
+4) DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/ for contact/distance/orientation prediction. 
+
+5) DistanceFoldingHome=$ModelingHome/Folding/ for building 3D models
+
+6) Make sure that the setup in $ModelingHome/raptorx-external.sh is correct and then add ". $ModelingHome/raptorx-external.sh " to the .bashrc file in your own Linux account to set enviromental variables related to MSA generation.
+
+Supposing that the RaptorX-3DModeling package is located at $HOME/RaptorX-3DModeling/,
+below is an example configuration that can be pasted to the .bashrc file (when your account is using the bash shell).
+
+export ModelingHome=$HOME/RaptorX-3DModeling/
+
+. $ModelingHome/raptorx-external.sh
+
+export DistFeatureHome=$ModelingHome/BuildFeatures/
+
+export DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/
+
+export DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/
+
+export DistanceFoldingHome=$ModelingHome/Folding/
+
+export PYTHONPATH=$ModelingHome:$PYTHONPATH
+
+export PATH=$ModelingHome/bin:$PATH
+
+export CUDA_ROOT=/usr/local/cuda/
+
+If you are using csh shell, you may add a similar setting to the file .cshrc in your home directory.
 
 ## Detailed Usage
 
