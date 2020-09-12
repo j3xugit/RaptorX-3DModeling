@@ -82,8 +82,6 @@ cd to shared_ndarray/ and then run "python setup.py install".
 
 ** Required tools and sequence databases for MSA generation
 
-Note that HHblits (and its seq databases), uniref90 and metagenome database are already available on RX machines, no need to reinstall them to run RaptorX on these machines.
-
 1) Install HHblits for MSA generation (https://github.com/soedinglab/hh-suite)
 
 In addition to the HHsuite package itself, please also download a sequence database specific to HHsuite, 
