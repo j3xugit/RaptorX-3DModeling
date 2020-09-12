@@ -22,12 +22,19 @@ Download this package by "git clone" and install it anywhere in your own account
 It contains the following important files and subfolders (and a few others):
 
 BuildFeatures/
+
 DL4DistancePrediction4/
+
 DL4PropertyPrediction/
+
 Folding/
+
 params/
+
 raptorx-external.sh
+
 README.md
+
 Server/
 
 Meanwhile, BuildFeatures/ is for generating MSAs and input features for angle/contact/distance/orientation prediction,
