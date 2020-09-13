@@ -37,7 +37,7 @@ ResultDir=`pwd`
 MSAmode=25
 numCPUs=5
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -d ResultDir | -m MSAmethod | -t SeqDB4Threading | -h SeqDB4HHMSA | -j SeqDB4Jackhmmer | -c numCPUs ] seqFile"
 	echo "	This script generates MSAs and features for threading and contact/distance prediction using HHblits and Jackhmmer"

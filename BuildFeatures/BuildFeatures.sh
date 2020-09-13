@@ -17,7 +17,7 @@ GPUmode=4
 GPUMachineFile=$ModelingHome/params/GPUMachines.txt
 MSAmethod=25
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -o outfolder | -g gpu | -r machineMode | -h MachineFile | -m MSAmethod ] inputFile"
 	echo "	This script builds all needed features for local structure property prediction and contact/distance/orientation prediction for one protein"

@@ -15,7 +15,7 @@ alpha=1.61
 cmd=`readlink -f $0`
 cmdDir=`dirname $cmd`
 
-function Usage()
+function Usage
 {
 	echo "$0 [ -d savefolder | -n numModels | -r runningMode | -a alpha | -p ] inFile predictedPairInfo predictedPropertyInfo"
 	echo "	This script folds a protein and/or relaxes 3D models using predicted information"

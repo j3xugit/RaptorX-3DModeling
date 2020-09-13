@@ -5,7 +5,7 @@ if [[ -z "${DistFeatureHome}" ]]; then
 	exit 1
 fi
 
-function usage()
+function usage
 {
 	echo "Version 2.00 [2018-08-10] "
 	echo $0 " -i input_fasta [-n iter] [-b bitsco] [-t thres] [-o out_root] [-c numCPUs] [-d uniref90]"

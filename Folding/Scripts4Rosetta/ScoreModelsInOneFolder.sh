@@ -3,7 +3,7 @@
 alpha=1.61
 savefolder=`pwd`
 
-function Usage()
+function Usage
 {
 	echo $0 "[-a alpha | -d savefolder ] ModelFolder cstFolder [propertyFolder]"
 	echo "	This script scores unrelaxed 3D models in one folder"

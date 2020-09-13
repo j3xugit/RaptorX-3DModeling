@@ -7,7 +7,7 @@ MaxDist=18
 Alpha=1.61
 TopRatio=25
 
-function Usage(){
+function Usage {
 	echo "$0 [ -a alpha | -c distCutoff | -t TopRatio | -w w4phipsi | -s seqSep | -d savefolder ] targetListFile folder4predictedPairInfo folder4predictedProperty "
 	echo "	This script generates rosetta constraints for a list of proteins from predicted distance/orientation and property information"
         echo "	targetListFile: a file for a list of protein names, each in one row"

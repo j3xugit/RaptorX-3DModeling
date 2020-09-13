@@ -4,7 +4,7 @@ savefolder=`pwd`
 filter=""
 alpha=1.61
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -d savefolder | -f filter4models | -a alpha] proteinListFile metaFolder4initialModels cstFolder [propertyFolder]"
 	echo "	This script prints out relaxation jobs for a list of proteins to be submitted to a cluster or GNU parallel"

@@ -22,7 +22,7 @@ GPUmode=4
 out_root=`pwd`
 gpu=-1
 
-function Usage()
+function Usage
 {
 	echo $0 "[-d out_root | -g gpu | -r machineMode | -h machinefile ] input_A3M"
 	echo "	iput_a3m: an MSA file in a3m format, in which the first sequence shall be the query and not contain any gaps"

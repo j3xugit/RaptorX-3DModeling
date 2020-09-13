@@ -7,7 +7,7 @@ if [ "$host" == "raptorx10.uchicago.edu" ]; then
 	numAllowedJobs=50
 fi
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -n numJobs | -d savefolder ] proteinListFile folder4predictedDistProbMatrix"
 	echo "	This script derives distance potential from predicted dist information for protein threading"

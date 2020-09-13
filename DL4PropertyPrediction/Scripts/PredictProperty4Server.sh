@@ -17,7 +17,7 @@ GPU=-1
 GPUMachineFile=$ModelingHome/params/GPUMachines.txt
 ResultDir=""
 
-function Usage(){
+function Usage {
         echo $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -h GPUMachineFile ] proteinName rootDir"
         echo "	This script predicts structure properties of one protein using a local or remote GPU"
 	echo "	proteinName: the protein name"

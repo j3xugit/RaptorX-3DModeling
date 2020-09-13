@@ -20,7 +20,7 @@ GPUmode=4
 out_root=`pwd`
 gpu=-1
 
-function Usage()
+function Usage
 {
 	echo $0 "[-o out_root | -g gpu | -r machineMode | -h MachineFile ] input_A3M "
 	echo "	This script generates input features for distance/orientation prediction from an MSA file in a3m format"

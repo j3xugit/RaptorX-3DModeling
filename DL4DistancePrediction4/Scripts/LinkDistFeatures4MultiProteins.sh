@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function Usage()
+function Usage
 {
 	echo "$0 [ -M | -s MSAmethod | -d savefolder ] proteinListFile MetaDir"
 	echo "	This script links the input feature files (*.a2m, *.extraCCM.pkl, *.inputFeatures.pkl) dispersed in multiple XXX_OUT/XXX_contact folders into a single folder"

@@ -14,7 +14,7 @@ RemoteAccount="raptorx7.uchicago.edu"
 
 alignmentType=0
 
-function Usage(){
+function Usage {
         echo $0 "[ -T alignmentType | -f DeepModelFile | -m ModelName | -d ResultDir | -r remoteAccount | -g gpu ] proteinName inputFolder"
 	echo "	This script predicts distance and orientation from MSAs and optionally templates using a GPU on a remote machine"
 	echo "	proteinName: the protein name"

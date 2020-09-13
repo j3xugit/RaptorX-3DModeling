@@ -15,7 +15,7 @@ ModelName=PhiPsiSet10820Models
 GPU=cuda0
 ResultDir=`pwd`
 
-function Usage(){
+function Usage {
         echo $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu ] proteinListFile hhmFolder"
 	echo "	This script predicts local property for a list of proteins"
 	echo "	proteinListFile: a file for a list of protein names, each in one row"

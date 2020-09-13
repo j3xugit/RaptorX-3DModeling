@@ -5,7 +5,7 @@ if [[ -z "${DL4DistancePredHome}" ]]; then
 	exit 1
 fi
 
-function Usage()
+function Usage
 {
 	echo $0 proteinName predFolder
 	echo "	This script ranks predictions of one protein by top L long-range contact probability sum"

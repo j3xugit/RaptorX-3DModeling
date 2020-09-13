@@ -20,7 +20,7 @@ GPU=-1
 ResultDir=""
 alignmentType=0
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -T alignmentType | -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -h GPUMachineFile ] proteinName RootDir"
         echo "	This script predicts distance/orientation for one protein from MSAs and optionally templates on a local or remote GPU"

@@ -30,7 +30,7 @@ machineType=0
 ## the maximum length of a protein to be folded. If you want to fold a larger protein, you may set a larger value for this parameter
 maxLen2BeFolded=1050
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -o outDir | -g gpu | -m MSAmethod | -n numDecoys | -r runningMode | -R remoteAccountInfo | -t machineType | -l maxLen2BeFolded ] inputFile"
 	echo "	This script predicts angle/contact/distance/orientation of a protein and optionally folds it"

@@ -24,7 +24,7 @@ GPU=-1
 alignmentType=0
 ModelName=""
 
-function Usage(){
+function Usage {
         echo $0 "[  -T alignmentType | -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu ] proteinName inputFolder"
         echo "	This script predicts distance and orientation from MSAs and optionally templates using a GPU on a local machine"
 	echo "	proteinName: the potein name"

@@ -13,7 +13,7 @@ if [ "$host" == "raptorx10.uchicago.edu" ]; then
 	numAllowedJobs=150
 fi
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -n numJobs | -d ResDir ] proteinListFile SeqDir PDBDir"
 	echo "	This script calculates the property/distance/orientation ground truth by sequence and structure file"

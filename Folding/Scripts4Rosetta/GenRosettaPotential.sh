@@ -16,7 +16,7 @@ w4phipsi=1
 querySeqFile=""
 savefolder=`pwd`
 
-function Usage(){
+function Usage {
 	echo "$0 [-A atomType | -a alpha | -c distCutoff | -t topRatio | -w w4phipsi | -s seqSep | -q querySeqFile | -d saveFolder] predictedPairPKLfile predictedPropertyPKLfile"
 	echo "	This script generates Rosetta constraints from predicted inter-atom distance/orientation and backbone Phi/Psi angles"
 	echo "		The generated distance potential is derived by using DFIRE reference state"

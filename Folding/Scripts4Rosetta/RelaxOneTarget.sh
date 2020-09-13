@@ -14,7 +14,7 @@ filter=''
 ## at most this number of jobs to be run simultaneously
 numAllowedJobs=`nproc --all`
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -f filter4initiModels | -d savefolder | -c numCPUs | -a alpha ] initModelFolder predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script generates Rosetta constraints from predicted inter-residue relationship and PhiPsi angles and then relax 3D models"

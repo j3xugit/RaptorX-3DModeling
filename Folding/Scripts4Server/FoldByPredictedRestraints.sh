@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ----- usage ------ #
-Usage()
+Usage
 {
 	echo "This script folds one protein by predicted inter-atom contacts/distance and predicted secondary structure/torsion angles"
 	echo ""

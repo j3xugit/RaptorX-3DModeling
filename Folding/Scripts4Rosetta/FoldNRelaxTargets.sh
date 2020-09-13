@@ -6,7 +6,7 @@ numCPUs=18
 runningMode=0
 UsePerturbation=false
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -d savefolder | -n numModels | -c numCPUs | -r runningMode |  -p ] proteinListFile inFileDir cstFolder [propertyFolder]"
 	echo "	This script folds/relaxes jobs for a list of proteins"

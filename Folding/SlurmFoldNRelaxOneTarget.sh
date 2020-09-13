@@ -33,7 +33,7 @@ propertyFile="cst"
 
 NotBlock=False
 
-function Usage()
+function Usage
 {
 	echo $0 "[-d savefolder | -n numModels | -r runningMode | -q partition | -a alpha | -p | -b ] seqFile predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script runs folding jobs mainly on a slurm cluster with hetergeneous nodes which may have very different configurations"

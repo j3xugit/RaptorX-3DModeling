@@ -12,7 +12,7 @@ templates=TPL-PDB70_29Apr2020.list
 savefolder=''
 groupFile=''
 
-function Usage()
+function Usage
 {
 	echo $0 "[-E evalue | -I MaxSeqID | -d savefolder | -s savefile | -c PDBClusterFile | -t templateList | -n maxNumTemplates ] targetListFile HHMDir HHRDir"
 	echo "	This script extracts pairwise alignments from .hhr files, mainly for training"

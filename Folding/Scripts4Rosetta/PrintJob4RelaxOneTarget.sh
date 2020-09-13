@@ -9,7 +9,7 @@ savefolder=`pwd`
 filter=''
 alpha=1.61
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -d savefolder | -f filter4modelNames | -a alpha ] initModelFolder predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script prints out a list of jobs for relaxation"

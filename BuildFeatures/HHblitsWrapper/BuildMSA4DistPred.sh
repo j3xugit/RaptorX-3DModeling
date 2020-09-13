@@ -25,7 +25,7 @@ input_fasta=""
 iteration=3
 e_value=0.001
 
-function usage()
+function usage
 {
 	echo $0 " [-n iteration] [-e evalue] [-C coverage] [-o out_root] [-c numCPUs ] [-d DB] [-h hhsuite] seqFile"
 	echo "	This script run HHblits to build an MSA for a protein sequence"

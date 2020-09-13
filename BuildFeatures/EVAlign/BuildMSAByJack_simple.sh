@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ----- usage ------ #
-usage()
+usage
 {
 	echo "Version 3.00 [2018-11-20] "
 	echo $0 " <-i input_fasta> [-n iter] [-b bitsco] [-t thres] [-o out_root] [-c CPU_num] [-d uniref90]"

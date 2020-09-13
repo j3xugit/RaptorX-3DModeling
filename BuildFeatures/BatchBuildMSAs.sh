@@ -35,7 +35,7 @@ MSAmode=25
 numCPUs=5
 numAllowedJobs=5
 
-function Usage()
+function Usage
 {
         echo $0 "[ -d ResultDir | -m MSAmethod | -t SeqDB4Threading | -h SeqDB4HHblits | -j SeqDB4Jackhmmer | -n numJobs | -c numCPUs ] proteinListFile SeqDir"
         echo "	This script generates MSAs for contact/distance/orientation prediction using HHblits and optionally Jackhmmer for a list of proteins"

@@ -13,7 +13,7 @@ numAllowedJobs=3
 ResDir=`pwd`
 gpu=-1
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -o ResDir | -g gpu | -n numJobs | -r machineMode | -h MachineFile ] proteinListFile MSADir"
 	echo "	This script generates input features for distance/orientation prediction from a set of MSAs, each for one protein"

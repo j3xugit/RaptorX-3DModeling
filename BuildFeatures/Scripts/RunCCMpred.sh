@@ -18,7 +18,7 @@ fi
 outDir=`pwd`
 gpu=-1
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -d outDir | -g gpu ] a3mfile"
 	echo "	This script runs CCMpred on a local GPU"

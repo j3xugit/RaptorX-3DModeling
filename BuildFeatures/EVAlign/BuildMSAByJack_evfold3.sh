@@ -15,7 +15,7 @@ iteration="3"
 bitscore="0"
 threshold="0.001"
 
-function usage()
+function usage
 {
 	echo $0 "[-n iter | -b bitsco | -t thres | -o out_root | -c numCPUs | -d uniref90] input_fasta"
 	echo "	-n: the number of iterations (default $iteration)"

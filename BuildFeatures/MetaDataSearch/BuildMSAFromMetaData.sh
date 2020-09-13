@@ -13,7 +13,7 @@ home=`dirname $cmd`    #-> home directory
 #data_db=$home/databases/metaclust50.fasta  #-> can be uniref90, or other sequence databases, with suffix ".fasta"
 data_db=$MetaDB
 
-function usage()
+function usage
 {
 	echo "$0 [-d database | -o out_root | -c CPU_num | -m merge | -e evalue | -s seqid | -K remove_tmp] input_fasta input_a3m"
 	echo "    This script generates an extra MSA by searching through a metagenome database with a given A3M file and a sequence file"

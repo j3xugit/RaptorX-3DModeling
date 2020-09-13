@@ -6,7 +6,7 @@ gpu=-1
 
 MSAmethod=25
 
-function Usage()
+function Usage
 {
 	echo $0 "[ -o outDir | -g gpu | -m MSAmethod | -n numJobs ] proteinList SeqDir "
 	echo "	This script builds contact/distance/orientation/property/threading prediction features for a set of proteins"

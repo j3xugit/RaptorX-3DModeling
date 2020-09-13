@@ -18,7 +18,7 @@ UsePerturbation=false
 cmd=`readlink -f $0`
 cmdDir=`dirname $cmd`
 
-function Usage()
+function Usage
 {
 	echo $0 "[-d savefolder | -n numModels | -c numCPUs | -r runningMode | -a alpha | -p ] seqFile predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script folds a protein (and optionally relaxes the initial models) using predicted distance/orientation/angles"
