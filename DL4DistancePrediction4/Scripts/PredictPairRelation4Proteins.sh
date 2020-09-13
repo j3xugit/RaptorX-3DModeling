@@ -10,7 +10,7 @@ ModelName=""
 GPU=-1
 ResultDir=`pwd`
 
-MSAmethod=2
+MSAmethod=4
 UseMetaGenomeData=true
 
 tplStr=""
@@ -26,7 +26,7 @@ function Usage()
 	echo "	proteinListFile: a file for a list of proteins, each in one row"
         echo "	metaFolder: a folder containing some subfolders XXX_OUT, which in turn shall contain a subfolder XXX_contact (e.g., T0955_OUT/T0955_contact/)"
 	echo "		Each XXX_contact/ shall contain some subfolders such as feat_XXX_YYY where YYY represents an MSA generation method, e.g., uce3, ure3_meta"
-	echo "	-s: indicates which MSAs to be used, 0 for hhblits, 1 for jackhmmer and 2 for both (default), 3 for user-provided MSA"
+	echo "	-s: indicates which MSAs to be used, 0 for hhblits, 1 for jackhmmer, 2 for both, 3 for user-provided MSA and 4 for all three, default $MSAmethod"
 	echo "	-M: if specified, do not use meta genome data, default use it when available"
 	echo " "
 	echo "	aliFolders: optional, specify one or multiple folders that contain query-template alignments. The folders shall be saparated by ; without whitespace"

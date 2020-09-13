@@ -10,10 +10,10 @@ function Usage()
 	echo "	MetaDir: a folder contains a set of folders with name XXX_OUT where XXX is the protein names"
 	echo "	-d: the folder for result saving, default current work directory"
 	echo "	-M: when specified, no meta genome data used, default use metagenome data"
-	echo "  -s: the MSA generation method, 0 for hhblits, 1 for jackhmmer and 2 for both (default), 3 for user-provided MSA"
+	echo "  -s: the MSA generation method, 0 for hhblits, 1 for jackhmmer, 2 for both, 3 for user-provided MSA and 4 for all three, default 4"
 }
 
-MSAmethod=2
+MSAmethod=4
 UseMetaGenomeData=true
 ResDir=`pwd`
 
@@ -65,7 +65,9 @@ ResDir=`readlink -f $ResDir`
 
 currDir=`pwd`
 
-if [ $MSAmethod -eq 2 ]; then
+if [ $MSAmethod -eq 4 ]; then
+        methods="uce3 uce5 ure3 ure5 user"
+elif [ $MSAmethod -eq 2 ]; then
         methods="uce3 uce5 ure3 ure5"
 elif [ $MSAmethod -eq 0 ]; then
         methods="uce3 uce5"
