@@ -38,7 +38,7 @@ function Usage()
 	echo "		Please make sure that ModelingHome is correctly set to the install folder of the RaptorX-3DModeling package"
 	echo "		Before running this script, some external software packages shall be installed in your own account. See README.md for details"
 	echo " "
-	echo "	inputFile: a protein primary sequence file in FASTA format or a multiple sequence alignment file in a3m format"
+	echo "	inputFile: a protein primary sequence file in FASTA format (ending with .fasta or .seq) or a multiple sequence alignment file in a3m format (ending with .a3m)"
 	echo "	-o: the folder for results, default current work directory, in which a subfolder target_OUT will be created where target is the protein name"
 	echo "	-g: 0-3, and -1(default). If -1, automatically select GPUs with the maximum amount of free memory"
 	echo "		A very large protein may need GPUs with more than 12G memory"
