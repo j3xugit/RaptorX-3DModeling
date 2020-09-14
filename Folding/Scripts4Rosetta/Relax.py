@@ -143,8 +143,8 @@ def main(argv):
                 print 'alpha for DFIRE:', param4Potential
                 assert param4Potential <= 1.63 and (param4Potential >= 1.57), 'In Relax.py, param for DFIRE distance potential is out of range'
 
-		seq = ReadFASTAFile(inputFile)
-                seqLen = len(seq)
+		seq = None
+                seqLen = pose.total_residue()
 
                 ## create a CST folder and generate the CST file
 		machine = socket.gethostname().split('.')[0]
