@@ -128,7 +128,7 @@ def main(argv):
 	rosetta.basic.options.set_boolean_option( 'run:nblist_autoupdate', True )
 
 	pose = InitializePose(inputFile)
-	if warmup > 0
+	if warmup > 0:
 		pose = RelaxWithoutConstraints(pose, ncycles=warmup)
 
 	if not pairFileIsCST:
