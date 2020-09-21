@@ -213,9 +213,9 @@ def Nesterov(params, param_grads, momentum=0.90, lr=0.01):
         return updates, param_updates
 
 
-from matplotlib import pyplot  as plt
 
 def myplot(data, style, title, plot_number, total):
+    from matplotlib import pyplot  as plt
     plt.subplot(1,total,plot_number)
     x, y = zip(*data)
     plt.plot(x, y, 'ro-')

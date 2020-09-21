@@ -5,7 +5,7 @@ if [[ -z "${DL4DistancePredHome}" ]]; then
 	exit 1
 fi
 
-function Usage
+function Usage 
 {
 	echo $0 "predFolder truthFile [targetName]"
 	echo "	This script evaluates all predicted contacts for one protein"

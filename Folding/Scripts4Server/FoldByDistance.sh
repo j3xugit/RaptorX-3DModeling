@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ----- usage ------ #
-usage
+usage 
 {
 	echo "FoldByDistance v0.01 [Mar-14-2017] "
 	echo "    Fold proteins by predicted inter-residue distance and secondary structure"

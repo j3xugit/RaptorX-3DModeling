@@ -30,9 +30,11 @@ machineType=0
 ## the maximum length of a protein to be folded. If you want to fold a larger protein, you may set a larger value for this parameter
 maxLen2BeFolded=1050
 
-function Usage
+printContactInCASPOnly=0
+
+function Usage 
 {
-	echo $0 "[ -o outDir | -g gpu | -m MSAmethod | -n numDecoys | -r runningMode | -R remoteAccountInfo | -t machineType | -l maxLen2BeFolded ] inputFile"
+	echo $0 "[ -o outDir | -g gpu | -m MSAmethod | -n numDecoys | -r runningMode | -R remoteAccountInfo | -t machineType | -l maxLen2BeFolded | -c ] inputFile"
 	echo "	This script predicts angle/contact/distance/orientation of a protein and optionally folds it"
 	echo "		ModelingHome=$ModelingHome"
 	echo "		Please make sure that ModelingHome is correctly set to the install folder of the RaptorX-3DModeling package"
@@ -40,6 +42,7 @@ function Usage
 	echo " "
 	echo "	inputFile: a protein primary sequence file in FASTA format (ending with .fasta or .seq) or a multiple sequence alignment file in a3m format (ending with .a3m)"
 	echo "	-o: the folder for results, default current work directory, in which a subfolder target_OUT will be created where target is the protein name"
+	echo "	-c: print only contact probability in CASP format, but not distance probability, default both" 
 	echo "	-g: 0-3, and -1(default). If -1, automatically select GPUs with the maximum amount of free memory"
 	echo "		A very large protein may need GPUs with more than 12G memory"
 	echo "	-l: the maximum length of a protein for which a 3D model will be built, default $maxLen2BeFolded"
@@ -68,7 +71,7 @@ function Usage
 	echo "		2 for a slurm cluster with homogenous nodes, 3 for a slurm cluster with hetergenous nodes and 4 for a multi-CPU Linux computer without GNU parallel installed"
 }
 
-while getopts ":o:g:m:n:r:R:t:l:" opt; do
+while getopts ":o:g:m:n:r:R:t:l:c" opt; do
         case ${opt} in
                 o )
                   outDir=$OPTARG
@@ -93,6 +96,9 @@ while getopts ":o:g:m:n:r:R:t:l:" opt; do
 		  ;;
 		l )
 		  maxLen2BeFolded=$OPTARG
+		  ;;
+		c )
+		  printContactInCASPOnly=1
 		  ;;
                 \? )
                   echo "Invalid Option: -$OPTARG" 1>&2
@@ -148,9 +154,14 @@ if [ ! -f $predPropertyFile ]; then
 	exit 1
 fi
 
-$DL4DistancePredHome/Scripts/PredictPairRelation4Server.sh -g $GPU $target $outDir/${target}_OUT/
+options=" -g $GPU "
+if [ $printContactInCASPOnly -eq 1 ]; then
+	options=${options}" -c "
+fi
+
+$DL4DistancePredHome/Scripts/PredictPairRelation4Server.sh $options $target $outDir/${target}_OUT/
 if [ $? -ne 0 ]; then
-	echo "ERROR: failed to run $DL4DistancePredHome/Scripts/PredictPairRelation4Server.sh -g $GPU $target $outDir/${target}_OUT/"
+	echo "ERROR: failed to run $DL4DistancePredHome/Scripts/PredictPairRelation4Server.sh $options $target $outDir/${target}_OUT/"
 	exit 1
 fi
 ## the predicted distance/orientation file is saved in $outDir/${target}_OUT/DistancePred/

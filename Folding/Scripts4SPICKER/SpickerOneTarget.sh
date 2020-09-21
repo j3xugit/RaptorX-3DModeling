@@ -2,13 +2,13 @@
 
 savefolder=''
 
-function Usage
+function Usage 
 {
         echo $0 "[ -s | -d savefolder ] SeqFile ModelFolder1 ModelFolder2 ModelFolder3 ..."
-	echo " -s: when specified, select models by energy "
+	echo "	-s: when specified, select models by energy "
+	echo "	-d: the folder for result saving, default bname-SpickerResults/ in current work directory where bname is the base name of the first modelFolder"
 	echo "	SeqFile: the primary seq file in FASTA format"
 	echo "	ModelFolder: the folder for decoys to be clustered"
-	echo "	savefolder: the folder for result saving, default bname-SpickerResults where bname is the basename of the first modelFolder"
 }
 
 if [[ -z "$ModelingHome" ]]; then

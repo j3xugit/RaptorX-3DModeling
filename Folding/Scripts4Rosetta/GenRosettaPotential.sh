@@ -1,8 +1,8 @@
 #!/bin/sh
 
-PotentialType=DFIRE
 atomType="CbCb+CaCa+NO+TwoROri"
 
+PotentialType=DFIRE
 MaxDist=18
 Alpha=1.61
 seqSep=1
@@ -18,19 +18,20 @@ savefolder=`pwd`
 
 function Usage {
 	echo "$0 [-A atomType | -a alpha | -c distCutoff | -t topRatio | -w w4phipsi | -s seqSep | -q querySeqFile | -d saveFolder] predictedPairPKLfile predictedPropertyPKLfile"
-	echo "	This script generates Rosetta constraints from predicted inter-atom distance/orientation and backbone Phi/Psi angles"
-	echo "		The generated distance potential is derived by using DFIRE reference state"
-	echo "	predictedPairFile: a PKL file for predicted inter-residue distance and orientation"
-	echo "	predictedPropertyFile: a PKL file for predicted backbone Phi/Psi angles"
+	echo "	This script generates Rosetta constraints from predicted inter-atom distance/orientation and backbone phi/psi angles"
+	echo "		The generated distance potential is built upon the DFIRE reference state"
+	echo "	predictedPairFile: a PKL file for predicted inter-residue distance and orientation information"
+	echo "	predictedPropertyFile: a PKL file for predicted backbone phi/psi angles"
+	echo "	-q: the protein sequence file in FASTA format. When provided, check the sequence consistency between querySeqFile and predictedPairPKLfile/predictedPropertyPKLfile"
+	echo "	-d: the folder for result saving, default current work directory"
+	echo "		The resulant file has name XXX.pairPotential4Rosetta.SPLINE.txt where XXX is the base name of predictedPairPKLfile"
+	echo " "
 	echo "	-A: the atom pair type for distance and orientation information, default $atomType"
 	echo "	-a: alpha for DFIRE distance reference state, default $Alpha"
 	echo "	-c: the maximum distance cutoff for DFIRE distance potential, default $MaxDist"
 	echo "	-t: the number of top orientation constraints to be used per residue, default $TopRatio"
 	echo "	-w: the weight for backbone Phi/Psi angle constraint, default $w4phipsi"
 	echo "	-s: sequence separation for inter-atom distance potential (default $seqSep), i.e., considering two atoms only if their residue index difference is at least this value"
-	echo "	-q: the protein sequence file in FASTA format. If provided, check the sequence consistency between querySeqFile and predictedPairPKLfile/predictedPropertyPKLfile"
-	echo "	-d: the folder for result saving, default current work directory"
-	echo "	the resulant file is named after targetName.pairPotential4Rosetta.SPLINE.txt"
 }
 
 if [[ -z "$DistanceFoldingHome" ]]; then
@@ -76,11 +77,10 @@ while getopts ":A:a:c:t:w:s:q:d:" opt; do
 done
 shift $((OPTIND -1))
 
-if [ $# -lt 2 ]; then
+if [ $# -ne 2 ]; then
 	Usage
 	exit 1
 fi
-
 
 pairMatrixFile=$1
 if [ ! -f $pairMatrixFile ]; then
@@ -106,44 +106,44 @@ fi
 
 PotentialDir=$savefolder
 
+
+## generate pairwise potential
+PairPotentialFile=$PotentialDir/${target}.pairPotential.$PotentialType.$MaxDist.$Alpha.pkl
+python $DistanceFoldingHome/GenPairwisePotentialFromPrediction.py -s $PairPotentialFile -a $atomType -r $PotentialType+$MaxDist+$Alpha $pairMatrixFile 
+
 ## the resultant CST file has name ${target}.pairPotential4Rosetta.SPLINE.txt
 cstfile=${PotentialDir}/${target}.pairPotential4Rosetta.SPLINE.txt
 
-## generate pairwise potential
-PairPotentialFile=$PotentialDir/${target}.pairPotential.$PotentialType.$MaxDist.$Alpha.Ref4O.Wt4OD.pkl
-python $DistanceFoldingHome/GenPairwisePotentialFromPrediction.py -s $PotentialDir -a $atomType -r DFIRE+$MaxDist+$Alpha $pairMatrixFile 
-
-if [ -z "$querySeqFile" ]; then
-	python $DistanceFoldingHome/Scripts4Rosetta/GeneratePairPotential4Rosetta.py -t $TopRatio -s $seqSep -d $PotentialDir -a $atomType $PairPotentialFile
-else
-	python $DistanceFoldingHome/Scripts4Rosetta/GeneratePairPotential4Rosetta.py -t $TopRatio -s $seqSep -d $PotentialDir -a $atomType -q $querySeqFile $PairPotentialFile
+options="-t $TopRatio -s $seqSep -d $PotentialDir -a $atomType"
+if [ ! -z "$querySeqFile" ]; then
+	options=$options" -q $querySeqFile "
 fi
 
-if [ ! -f $cstfile ]; then
-        echo "ERROR: failed to generate pairwise distance/orientation potential for" $target
+python $DistanceFoldingHome/Scripts4Rosetta/GeneratePairPotential4Rosetta.py $options $PairPotentialFile
+if [ $? -ne 0 -o ! -f $cstfile ]; then
+        echo "ERROR: failed to run python $DistanceFoldingHome/Scripts4Rosetta/GeneratePairPotential4Rosetta.py $options $PairPotentialFile"
         exit 1
 fi
 
 ## add Phi/Psi potential
-propertyFile2=$PotentialDir/${target}.predictedProperty.pkl
-ln -s `readlink -f $propertyFile` $propertyFile2
+#propertyFile2=$PotentialDir/${target}.predictedProperty.pkl
+#ln -s `readlink -f $propertyFile` $propertyFile2
 
 PhiPsiPotentialFile=$PotentialDir/${target}.PhiPsi4AMBERPERIODIC.w${w4phipsi}.txt
-
-if [ -z "$querySeqFile" ]; then
-	python $DistanceFoldingHome/GenPropertyPotential4Rosetta.py -w ${w4phipsi} -s $PotentialDir $propertyFile2
-else
-	python $DistanceFoldingHome/GenPropertyPotential4Rosetta.py -w ${w4phipsi} -q $querySeqFile -s $PotentialDir $propertyFile2
+options="  -w ${w4phipsi} -s $PhiPsiPotentialFile "
+if [ ! -z "$querySeqFile" ]; then
+	options=$options" -q $querySeqFile "
 fi
 
-if [ ! -f $PhiPsiPotentialFile ]; then
-        echo "ERROR: failed to generate backbone Phi/Psi constraints for" $target
+python $DistanceFoldingHome/GenPropertyPotential4Rosetta.py $options $propertyFile
+if [ $? -ne 0 -o ! -f $PhiPsiPotentialFile ]; then
+        echo "ERROR: failed to run python $DistanceFoldingHome/GenPropertyPotential4Rosetta.py $options $propertyFile"
         exit 1
 fi
 cat $PhiPsiPotentialFile >> $cstfile
 
 rm -f $PairPotentialFile
 rm -f $PhiPsiPotentialFile
-rm -f $propertyFile2
+#rm -f $propertyFile2
 
 date; echo "The resultant Rosetta constraint file is at $cstfile and one folder may also be created to hold all Rosetta constraints."

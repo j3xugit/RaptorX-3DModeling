@@ -18,7 +18,7 @@ seqid.predictedDistMatrix.pkl	: this file contains predicted contact/distance/or
 
 seqid.gcnn	      : predicted contact matrix in text format
 
-seqid.rr	      : predicted contact file in the CASP format
+seqid.rr	      : predicted contact file in the CASP format. See https://predictioncenter.org/casp14/index.cgi?page=format#RR for its format
 
 seqid.png and seqid_[1/2/3/4/5].png            : image files for the predicted contact matrix
 seqid_dist.png and seqid_[1/2/3/4/5]_dist.png  : image files for the predicted distance matrix
@@ -29,18 +29,21 @@ seqid.epad_prob:	distance probability used by our old threading program DeepThre
 models/               : The folder contains the predicted five 3D models.
   0README             : a README file
 
-  seqid_model_X.pdb   : The predicted models in PDB format, where X ranges from 1 to 5.
+  seqid_model_X.pdb   : The predicted 3D model files in PDB format, where X ranges from 1 to 5.
 
-  seqid.model_summary : The file contains estimated RMSD in Angstrom of the predicted 3D models. This RMSD is not very accurate for a multi-domain protein.
+  seqid.model_summary : The file contains estimated erro in Angstrom of the predicted 3D models, which may not be very accurate for a multi-domain protein.
 
-  seqid_modelX.localQuality.txt	: the file contains estimated local distance deviation. Again, it is not very accurate for a multi-domain protein.
-
+  seqid_modelX.localQuality.txt	: the file contains estimated error in Angstrom per Ca atom. Again, it may not be accurate for a multi-domain protein.
 
 
 For method details, please consult Dr. Jinbo Xu @ jinboxu@gmail.com or read the following papers:
 
 1. Jinbo Xu. Distance-based protein folding powered by deep learning. PNAS, 2019.
+
 2. Sheng Wang, Siqi Sun, Zhen Li, Renyu Zhang and Jinbo Xu. Accurate De Novo Prediction of Protein Contact Map by Ultra-Deep Learning Model. PLoS Computational Biology, 2017.
+
 3. Sheng Wang, Zhen Li, Yizhou Yu and Jinbo Xu. Folding Membrane Proteins by Deep Transfer Learning. Cell Systems, 2017
+
 4. Jinbo Xu and Sheng Wang. Analysis of distance-based protein structure prediction by deep learning in CASP13. PROTEINS, 2019.
+
 5. Sheng Wang, Siqi Sun and Jinbo Xu. Analysis of deep learning methods for blind protein contact prediction in CASP12. PROTEINS, 2017

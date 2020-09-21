@@ -12,18 +12,17 @@ from DL4PropertyPrediction import PropertyUtils
 from Common.SequenceUtils import LoadFASTAFile
 
 def Usage():
-        print 'python GenPropertyPotential4Rosetta.py [-a propertyType | -f funcType | -w energyWeight | -s savefolder | -q querySeqFile | -o ] predidctedProperty_PKL'
+        print 'python GenPropertyPotential4Rosetta.py [-a propertyType | -f funcType | -w energyWeight | -s savefile | -q querySeqFile | -o ] predidctedProperty_PKL'
         print '  This script converts predicted property (e.g., phi/psi angles) to Rosetta potential'
         print '         predictedProperty_PKL: a PKL file contains a tuple of at least 3 items: name, primary sequence and predicted parameters for property distribution'
-	print '		Ideally, this file shall also contains prediction of property represented as a 1-d array with element indicating the probability of disorder'
+	print '		Ideally, this file shall also contain prediction of property represented as a 1-d array with element indicating the probability of disorder'
 	print ''
         print '  -a: property type(default PhiPsi), others not implemented yet'
 	print '  -f: functional type for the potential, currently only CHARMM, AMBERPERIODIC (default), CIRCULARHARMONIC and HARMONIC supported (see Rosetta definition)'
 	print '  -w: the weight factor used for this energy (default 1.0)'
-	print '	 -q: the protein sequence file. if provided, check the sequence consistency between this file and predidctedProperty_PKL'
+	print '	 -q: the protein sequence file. when provided, check the sequence consistency between this file and predidctedProperty_PKL'
 	print '  -o: if specified, disorder information will not be used; otherwise, will be used as the weight of the potential (default)'
-	print '  -s: the folder saving the resultant file, default current work directory'
-        print '  The result is saved to a text file'
+	print '  -s: a text file for result saving; when empty, will create a text file under current work directory with name derived from the method and some parameters'
 
 eps = np.finfo(np.float32).eps
 
@@ -108,13 +107,14 @@ def main(argv):
 	querySeq = None
 
 	UseDisorderInfo = True
-	savefolder = os.getcwd()
+	#savefolder = os.getcwd()
+	savefile = ''
 
 	if len(argv) < 1:
 		Usage()
 		exit(1)
 	try:
-                opts, args = getopt.getopt(argv,"a:f:w:s:q:o",["propertyType=", "funcType=", "weight=", "savefolder=", "querySeqFile=", "noDisorder="])
+                opts, args = getopt.getopt(argv,"a:f:w:s:q:o",["propertyType=", "funcType=", "weight=", "savefile=", "querySeqFile=", "noDisorder="])
         except getopt.GetoptError:
                 Usage()
                 exit(1)
@@ -148,8 +148,8 @@ def main(argv):
 		elif opt in ("-q", "--querySeqFile"):
 			querySeqFile = arg
 
-		elif opt in ("-s", "--savefolder"):
-			savefolder = arg
+		elif opt in ("-s", "--savefile"):
+			savefile = arg
 
 		elif opt in ("-o", "--noDisorder"):
 			UseDisorderInfo = False
@@ -194,9 +194,11 @@ def main(argv):
 	if len(constraints)<1:
 		print 'ERROR: cannot generate any constraints for Phi and Psi from ', inputFile
 		exit(1)
+	
+	if savefile == '':
+		savefile = targetName + '.PhiPsi4' + funcType + '.' + wStr + '.txt'
 
-	PhiPsiFile = os.path.join(savefolder, targetName + '.PhiPsi4' + funcType + '.' + wStr + '.txt')
-	with open(PhiPsiFile, 'w') as f:
+	with open(savefile, 'w') as f:
         	f.write('\n'.join(constraints))
 
 if __name__ == "__main__":

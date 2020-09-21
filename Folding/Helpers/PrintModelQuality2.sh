@@ -1,10 +1,12 @@
 #!/bin/sh
 
 if [ $# -lt 1 ]; then
-	echo $0 QualityResultsDir [domainListFile]
-	echo "  This script prints out the best quality in a set of -quality.txt.sorted files; each contains a list of quality for the 3D models of one protein"
-        echo "  when MyDMListFile is not provided, this script will check out all the -quality.txt.sorted files in ResultsDir/"
-        echo "  Otherwise, it will check out only those files with name like target*-quality.txt.sorted where target is a protein name in MyDMListFile"
+	echo $0 QualityResultDir [domainListFile]
+	echo "	This script prints out the best quality in a set of -quality.txt.sorted files; each contains a list of quality for the 3D models of one protein"
+	echo "	QualityResultDir: the folder containing all the -quality.txt.sorted files"
+	echo "	domainListFile: a file containing a list of protein domains, each in one row"
+        echo "		When DomainListFile is not provided, this script will check out all the -quality.txt.sorted files in QualityResultDir/"
+        echo "		Otherwise, it will check out only those files with name like target*-quality.txt.sorted where target is a protein name in DominListFile"
 
 	exit 1
 fi

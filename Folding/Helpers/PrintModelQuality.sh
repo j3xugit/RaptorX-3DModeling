@@ -1,10 +1,12 @@
 #!/bin/sh
 
 if [ $# -lt 1 ]; then
-	echo $0 ResultsDir [MyDMListFile]	
-	echo "	This script prints out the best quality in a set of .sorted files; each .sorted file contains a list of quality for the 3D models of one protein"
-	echo "	when MyDMListFile is not provided, this script will check out all the subfolders ending with Results in ResultsDir/; each subfolder shall have a .sorted file"
-	echo "	Otherwise, it will check out only those subfolders with name like target*Results where target is a protein name in MyDMListFile"
+	echo $0 ResultDir [MyDMListFile]	
+	echo "	This script summarizes the quality score in a set of .sorted files; each .sorted file contains a list of quality for the 3D models of one protein"
+	echo "	ResultDir: the meta folder containg a list of subfolders, each shall contain a set of 3D models and a .sorted file"
+	echo "	MyDMListFile: a list of protein domains defined by users"
+	echo "		when it is not provided, this script will check out all the subfolders *-*Results in ResultDir/"
+	echo "		Otherwise, it will check out only those subfolders with name like target*Results where target is a protein name in MyDMListFile"
 	exit 1
 fi
 

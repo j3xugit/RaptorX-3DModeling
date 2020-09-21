@@ -3,7 +3,7 @@
 nativeDir=CASP13DM-Native
 mappingFile=CASP13FM2MyDM.txt
 
-function Usage
+function Usage 
 {
 	echo $0 "[ -f filter4decoyFiles | -d savefolder ] proteinListFile/domainMappingFile decoyFolder [NativeFolder]"
 	echo "	This script calculates the quality (TM, GDT) of decoys of a list of proteins. Please make sure DeepScore is searchable by your bin path"

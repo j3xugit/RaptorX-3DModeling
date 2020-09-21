@@ -12,7 +12,7 @@ from DL4DistancePrediction4 import DistanceUtils
 from DL4DistancePrediction4 import RangeNWeight
 
 def Usage():
-    	print 'python GenPairwisePotentialFromPrediction.py [-a labelNames] [-w weightScheme] [-r refType | -f refFile] [-o] [-l minPotential] [-u maxPotential] [ -s savefolder ] predidctedPairwiseDistribution_PKL'
+    	print 'python GenPairwisePotentialFromPrediction.py [-a labelNames] [-w weightScheme] [-r refType | -f refFile] [-o] [-l minPotential] [-u maxPotential] [ -s savefile ] predidctedPairwiseDistribution_PKL'
 	print '  This scripts convert predicted distance/orientation distribution to potential and save it in PKL format'
     	print '      The input is a PKL file for predicted distance/orientation probability, e.g. target.predictedDistMatrix.pkl or target.mergedDistMatrix.pkl where target is a protein name'
     	print '      This file is a tuple of 6 or 7 items: name, primary sequence, predDistProb, predContactMatrix, labelWeight, labelDistribution and refDistProb (optional)'
@@ -22,7 +22,7 @@ def Usage():
 	print '  -a: labelNames, e.g., AllOri, CbCb+CaCa+NO+AllOri, CbCb, CaCa, CaCa+CbCb, AllAP+AllOri (default)'
 	print ''
 	print '  -w: weight scheme for distance/orientation potential (default 3): 0 (no weight), 1 (use weight for distance), 2(use weight for orientation) and 3(for both)'
-	print '	     for distance, weight = 1-Prob(disorder); for orientation, weight = Prob(dist<20) where P() is predicted probability'
+	print '		for distance, weight = 1-Prob(disorder); for orientation, weight = Prob(dist<20) where P() is predicted probability'
 
 	print '  -r: reference state (and some parameters) for distance potential, including DFIRE (default), DOPE and SimuRW (case insensitive)'
 	print '		DFIRE+18+1.61: 18 (default) is the dist cutoff and 1.61 (default) is the exponent'
@@ -31,7 +31,8 @@ def Usage():
 	print '		SimuRW+20: 20 is the dist cutoff'
 	print '  -f: file needed for reference state SimuRW'
 	print '  -o: do not use reference for orientation (default Use)'
-	print '  -s: savefolder for the result file. The resultant file is a tuple containing name, sequence, pairPotential, cutoffs and validProbability'
+	print '  -s: save file (shall end with .pkl); when empty, a PKL file will be automatically generated under current work directory with name derived from methods and parameter setting'
+	print '		the resultant file is a tuple containing name, sequence, pairPotential, cutoffs and validProbability'
 	print '		pairPotential is a dict(), cutoffs defines the discretization boundary and validProbability may be used as weight for corresponding potential'
 	print ''
 	print '  -l, -u: min and max potential for one pair of atoms, default values: -30 and 30, respectively. They are only used for potential check and do not impact the real potential values'
@@ -452,14 +453,15 @@ def main(argv):
 	## refFile for SimuRW
 	refFile = None
 
-	savefolder = os.getcwd()
+	#savefolder = os.getcwd()
+	savefile=""
 
 	if len(argv) < 1:
 		Usage()
 		exit(1)
 
     	try:
-        	opts, args = getopt.getopt(argv,"a:w:r:l:u:f:s:o",["labelNames=", "useWeight=", "refState=", "minPotential=", "maxPotential=", "refFile=", "savefolder=", "noRef4Orientation="])
+        	opts, args = getopt.getopt(argv,"a:w:r:l:u:f:s:o",["labelNames=", "useWeight=", "refState=", "minPotential=", "maxPotential=", "refFile=", "savefile=", "noRef4Orientation="])
         	#print opts, args
     	except getopt.GetoptError:
         	Usage()
@@ -518,10 +520,8 @@ def main(argv):
 		elif opt in ("-o", "--noRef4Orientation"):
 			UseRef4Orientation = False
 
-		elif opt in ("-s", "--savefolder"):
-			savefolder = arg
-			if not os.path.isdir(savefolder):
-				os.mkdir(savefolder)
+		elif opt in ("-s", "--savefile"):
+			savefile = arg
 
 		elif opt in ("-l", "--minPotential"):
 			minPotential = np.float32(arg)
@@ -588,53 +588,6 @@ def main(argv):
 	else:
 		print 'ERROR: unimplemented potential type: ', reference
 		exit(1)
-	"""
-	validDistribution = dict()
-	validLabelWeight = dict()
-	validLabelDistribution = dict()
-
-	existingLabelNames = []
-	for response, pred in predictedProb.iteritems():
-		labelName,_, _ = config.ParseResponse(response)
-		if labelName not in labelNames:
-			continue
-		existingLabelNames.append(labelName)
-		validDistribution[response] = pred
-		validLabelWeight[response] = labelWeight[response]
-		validLabelDistribution[response] = labelDistribution[response]
-
-	missingLabelNames = list(set(labelNames) - set(existingLabelNames))
-	if len(missingLabelNames)>0:
-		print 'WARNING: the predicted probability file does not have information for the following label names: ', missingLabelNames
-
-	pairPotential = dict()
-	validProb = dict()
-	distPotential = dict()
-	filenames = [ targetName, 'pairPotential']
-	if reference == 'DFIRE':
-		distPotential, validProb = CalcPotentialByDFIRE(validDistribution, alpha=alpha4DFIRE, largestDistance=rc, useWeight=UseWeight4Distance, minPotential=minPotential, maxPotential=maxPotential)
-		filenames.extend([reference, str(rc), alpha4DFIREstr])
-	elif reference == 'DOPE':
-		distPotential, validProb = CalcPotentialByDOPE(validDistribution, largestDistance=rc, rgScale=rgScale4DOPE, useWeight=UseWeight4Distance, minPotential=minPotential, maxPotential=maxPotential)
-		filenames.extend([reference, str(rc), str(rgScale4DOPE)])
-	elif reference == 'SimuRW'.upper():
-		distPotential = CalcPotentialBySimuRW(validDistribution, refFile, largestDistance=rc, useWeight=UseWeight4Distance, minPotential=minPotential, maxPotential=maxPotential)
-		filenames.extend([reference, str(rc)])
-		pairPotential.update(potential)
-	else:
-		print 'ERROR: unimplemented reference state: ', reference
-		exit(1)
-
-	pairPotential.update(distPotential)
-
-	oriPotential, oriValidProb = CalcOrientationPotential(validDistribution, useRef=UseRef4Orientation, useWeight=UseWeight4Orientation, labelWeight=validLabelWeight, labelDistribution=validLabelDistribution, minPotential=minPotential, maxPotential=maxPotential)
-	pairPotential.update(oriPotential)
-	validProb.update(oriValidProb)
-
-	cutoffs = dict()
-	for response in pairPotential.keys():
-		cutoffs[response] = config.GetCutoffs(response)
-	"""
 
 	if bool(oriPotential) and UseRef4Orientation:
 		filenames.append('Ref4O')
@@ -651,10 +604,10 @@ def main(argv):
 		filenames.append(wStr)
 
 	filenames.append('pkl')
-	savefile = '.'.join(filenames)
-	savefile = os.path.join(savefolder, savefile)
+	if savefile == "":
+		savefile = '.'.join(filenames)
 
-	## save to PKL file
+	## save the result
         with open(savefile, 'wb') as fh:
 		cPickle.dump((name, sequence, pairPotential, cutoffs, validProb), fh, protocol=cPickle.HIGHEST_PROTOCOL)
 

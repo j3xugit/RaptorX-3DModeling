@@ -14,7 +14,7 @@ RemoteAccountInfo=""
 RemoteAccount=""
 RemoteWorkDirBase=""
 
-function Usage
+function Usage 
 {
 	echo $0 "[-R remoteAccount | -d savefolder | -n numModels | -r runningMode | -a alpha | -t machineType | -p ] seqFile predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script folds a protein using a remote account"

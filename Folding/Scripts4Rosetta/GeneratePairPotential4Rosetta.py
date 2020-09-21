@@ -27,7 +27,8 @@ def Usage():
 	print '	     the -c and -t options can be combined to filter atom/residue pairs. However, currently they are not implemented for distance potential'
 	print ''
 	print '     -q: the protein sequence file. If provided, check the consistency between this file and the sequence in potential_PKL'		
-	print '	    -d: the folder for saving the result file (default ./)'
+	print '	    -d: the folder for saving the result file, default current work directory'
+	print '		one file XXX.pairPotential4Rosetta.SPLINE.txt and one subfolder SplinePotential4XXX will be generated under this folder where XXX is the base name of potential_PKL'
 	print '	    Example: python GeneratePairPotential4Rosetta.py -a CbCb+AllOri -s 2+2 T0950.pairPotential.DFIRE.18.1.61.pkl'
 
 ## this function writes the constraints into Rosetta format

@@ -106,7 +106,7 @@ def LoadContactMatrixInCASPFormat(filename):
 
 
 ##this function assumes that the residue index starts from 1
-def SaveContactMatrixInCASPFormat(target, sequence, contactMatrix, filename, distMatrix=None, probScaleFactor=config.ProbScaleFactor, author='RaptorX'):
+def SaveContactMatrixInCASPFormat(target, sequence, contactMatrix, filename, distMatrix=None, probScaleFactor=config.ProbScaleFactor, author='RaptorX', method='deep dilated convolutional residual neural networks by Jinbo Xu (jinboxu@gmail.com)'):
 
 	if probScaleFactor == 1:
 		contactMatrix2 = contactMatrix
@@ -142,17 +142,20 @@ def SaveContactMatrixInCASPFormat(target, sequence, contactMatrix, filename, dis
         lines.append('PFRMAT RR')
         lines.append('TARGET ' + target)
         lines.append('AUTHOR ' + author)
-        lines.append('METHOD deep dilated convolutional residual neural networks by Jinbo Xu (jinboxu@gmail.com)')
+        lines.append('METHOD ' + method)
 	if distMatrix is None:
 		lines.append('RMODE 1')
 	else:
 		lines.append('RMODE 2')
-        lines.append('MODEL 1')
+
+	lines.append('REMARK format is explained at https://predictioncenter.org/casp14/index.cgi?page=format#RR')
 
 	## sequence information not allowed any more, so we place it in the REMARK record
         segmentLen = 50
         for i in range(0, len(sequence), segmentLen):
         	lines.append('REMARK SEQ ' + sequence[i:i+segmentLen])
+
+        lines.append('MODEL 1')
 
         for i, j in zip(real_index[0], real_index[1]):
                 if numPairs > numAllowedPairs:

@@ -17,12 +17,13 @@ def FindStringsStartWith(strList, prefix):
 	return results
 
 def Usage():
-	print 'python PrintContactPrediction.py [-a | -d savefolder ] predictedDistMatrixPKL'
+	print 'python PrintContactPrediction.py [-a | -c | -d savefolder ] predictedDistMatrixPKL'
 	print '	This script prints predicted contacts from a predicted distance/orientation file and saves the result in two text formats: matrix and CASP'
-	print '	  -a: if is specified, also prints contact information for other atom pairs, e.g., CaCa, defaut no'
+	print '	-a: if is specified, also prints contact information for other atom pairs, e.g., CaCa, defaut no'
 	print '	  	for other atom pairs, the result files are named after targetName.XX.CASP.rr and targetName.XX.CM.txt where XX represents the atom pair'
 	print '	  	for Cb-Cb pairs, the result files are named after targetName.CASP.rr and targetName.CM.txt'
-	print '	  -d: folder for result saving, default current work directory'
+	print '	-c: print contact probability only, but not distance. By default, both contact and distance probability will be printed'
+	print '	-d: folder for result saving, default current work directory'
 
 if len(sys.argv) < 2:
 	Usage()
@@ -30,9 +31,10 @@ if len(sys.argv) < 2:
 
 savefolder = os.getcwd()
 bPrintOtherAtomPairs = False
+contactOnly = False
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "d:a", ["savefolder=", "allatompairs="])
+	opts, args = getopt.getopt(sys.argv[1:], "d:ca", ["savefolder=", "contactOnly=", "allatompairs="])
 except getopt.GetoptError as err:
 	print err
 	Usage()
@@ -41,6 +43,10 @@ except getopt.GetoptError as err:
 for opt, arg in opts:
 	if opt in ("-d", "--savefolder"):
 		savefolder = arg
+
+	elif opt in ("-c", "--contactOnly"):
+		contactOnly = True
+		
 	elif opt in ("-a", "--allatompairs"):
 		bPrintOtherAtomPairs = true
 	else:
@@ -80,10 +86,20 @@ for apt, m in contactMatrices.iteritems():
 	else:
 		continue
 
+	contactFile = os.path.join(savefolder, contactFileName)
+        np.savetxt(contactFile, m, fmt='%1.6f', delimiter=' ')
+
+	contactCASPFile = os.path.join(savefolder, contactCASPFileName)
+	if contactOnly:
+        	ContactUtils.SaveContactMatrixInCASPFormat(targetName, sequence, m, contactCASPFile, distMatrix=None, probScaleFactor=1)
+		continue
+
 	responses = FindStringsStartWith(distProbMatrix.keys(), apt)
 	if len(responses) != 1:
+		## right now for one apt, only one response is allowed
 		print 'ERROR: incorrect distance information for', apt, 'in', predFile
 		exit(1)
+
 	response = responses[0]
 	labelName, labelType, subType = config.ParseResponse(response)
 
@@ -93,9 +109,4 @@ for apt, m in contactMatrices.iteritems():
 
 	## convert distance matrix to what's needed by CASP
 	distMatrix = DistanceUtils.MergeDistanceBinsBySum(distProbMatrix[response], config.distCutoffs[subType], config.distCutoffs['10C'])
-
-	contactFile = os.path.join(savefolder, contactFileName)
-	contactCASPFile = os.path.join(savefolder, contactCASPFileName)
-
-        np.savetxt(contactFile, m, fmt='%1.6f', delimiter=' ')
         ContactUtils.SaveContactMatrixInCASPFormat(targetName, sequence, m, contactCASPFile, distMatrix=distMatrix, probScaleFactor=1)

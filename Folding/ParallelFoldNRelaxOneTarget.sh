@@ -18,7 +18,7 @@ parallelOptions=" --memfree 10G "
 cmd=`readlink -f $0`
 cmdDir=`dirname $cmd`
 
-function Usage
+function Usage 
 {
 	echo $0 "[-d savefolder | -n numModels | -r runningMode | -a alpha | -o parallelOptions | -p ] seqFile predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script runs GNU Parallel to fold a protein on a single node using predicted distance/orientation/angles"

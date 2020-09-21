@@ -66,7 +66,7 @@ fi
 cp $srcdir/${target}*.png $ResDir/
 cp $srcdir/${target}.CM.txt $ResDir/${target}.gcnn
 cp $srcdir/${target}.CASP.rr $ResDir/${target}.rr
-cp $srcdir/${target}.CASP.rr $ResDir/contactmap.txt
+#cp $srcdir/${target}.CASP.rr $ResDir/contactmap.txt
 cp $srcdir/${target}.CASP.rr $ResDir/${target}.contactmap.txt
 cp $srcdir/${target}.bound.txt $ResDir/
 cp $srcdir/${target}.predictedDistMatrix.pkl $ResDir/
@@ -88,6 +88,7 @@ if [ -d $srcdir ]; then
 	cp /dev/null $ResDir/${target}.pdb
 	modelDir=$ResDir/${target}_models
 	mkdir -p $modelDir
+	cp $ResDir/${target}.contactmap.txt $modelDir/
 
 	cp /dev/null $modelDir/${target}.model_summary
 

@@ -22,7 +22,7 @@ ModelName=""
 
 alignmentType=0
 
-function Usage
+function Usage 
 {
   	echo $0 " [ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -T alignmentType | -a aliStr | -t tplStr ] proteinListFile inputFolder1 [inputFolder2 inputFolder3 ...]"
 	echo "	This script predicts inter-atom distance/orientation for a list of proteins, each with a set of feature files"

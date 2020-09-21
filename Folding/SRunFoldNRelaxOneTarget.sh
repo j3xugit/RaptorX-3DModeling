@@ -25,7 +25,7 @@ if [[ -z "${DistanceFoldingHome}" ]]; then
         exit 1
 fi
 
-function Usage
+function Usage 
 {
 	echo $0 "[-d savefolder | -n numModels | -r runningMode | -q partition | -a alpha | -p ] seqFile predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script folds a protein using predicted distance/orientation/angles on a slurm cluster with nodes of similar configurations"
