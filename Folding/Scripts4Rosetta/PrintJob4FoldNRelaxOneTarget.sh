@@ -18,7 +18,7 @@ function Usage
 	echo "	-d: the folder for result saving, default current work directory"
 	echo "	-n: the number of models to be generated, default $numModels"
 	echo "	-r: running mode: 0 (fold only) or 1 (fold+relaxation), default $runningMode"
-	echo "	-a: alpha used in DFIRE potential, default $alpha"
+	echo "	-a: alpha used in DFIRE potential, default $alpha; if >20, a random value between 1.57 and 1.63 will be used"
 	echo "	-p: use perturbation in energy minization, default $UsePerturbation"
 }
 

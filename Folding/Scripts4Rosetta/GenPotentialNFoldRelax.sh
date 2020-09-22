@@ -28,7 +28,7 @@ function Usage
         echo "	-d: the folder for result saving, default current work directory"
         echo "	-r: specify running modes: 0 (fold only), 1 (fold and relax), 2 (relax only), default $runningMode"
 	echo "	     When 2 is used, inFile shall be a structure file; otherwise inFile shall be a seq file"
-	echo "	-a: alpha used in DFIRE potential, default $alpha"
+	echo "	-a: alpha used in DFIRE potential, default $alpha; if >20, a random value between 1.57 and 1.63 will be used"
 	echo "	-p: use perturbation at the folding stage, default $UsePerturbation"
 }
 

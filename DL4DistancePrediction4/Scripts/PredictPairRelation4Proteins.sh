@@ -48,7 +48,7 @@ function Usage
 while getopts ":f:m:d:g:s:T:M" opt; do
         case ${opt} in
                 f )
-                  DeepModelFile=$OPTARG
+                  DeepModelFile=`readlink -f $OPTARG`
                   ;;
                 m )
                   ModelName=$OPTARG
