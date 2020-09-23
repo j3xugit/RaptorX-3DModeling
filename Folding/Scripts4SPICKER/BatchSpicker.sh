@@ -2,18 +2,22 @@
 
 if [ $# -lt 3 ]; then
 	echo "$0 [-s] targetListFile SeqDir ModelMetaFolder [savefolder]"
-	echo "-s: when specified, select models by energy"
+	echo "	This script runs SPICKER on a list of proteins, each has a set of decoys"
+	echo "	-s: when specified, select models by potential, otherwise not"
+	echo "	SeqDir: a folder for all sequence files, each in FASTA format"
+	echo "	ModelMetaFolder: a meta folder containing a list of subfolders, each subfolder has the decoys of one protein"
+	echo "	savefolder: a folder for result saving. One subfolder in this folder will be created for each protein"
 	exit 1
 fi
 
 cmd=`readlink -f $0`
 cmdDir=`dirname $cmd`
 
-selectModel=false
+selectModel=0
 while getopts ":s" opt; do
        case ${opt} in
         s )
-          selectModel=true
+          selectModel=1
           ;;
         \? )
           echo "Invalid Option: -$OPTARG" 1>&2
@@ -58,9 +62,12 @@ do
 		continue
 	fi
 
-	if [ "$selectModel" = true ]; then
-		$cmdDir/SpickerOneTarget.sh -s $SeqDir/${target}.fasta $decoyFolder $savefolder/${target}-SpickerResults &
-	else
-		$cmdDir/SpickerOneTarget.sh $SeqDir/${target}.fasta $decoyFolder $savefolder/${target}-SpickerResults &
+	options=" -d $savefolder/${target}-SpickerResults "
+	if [ $selectModel -eq 1 ]; then
+		options=$options" -s "
 	fi
+
+	$cmdDir/SpickerOneTarget.sh $options $SeqDir/${target}.fasta $decoyFolder &
 done
+
+wait
