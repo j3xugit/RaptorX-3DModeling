@@ -7,19 +7,16 @@ import numpy as np
 import ContactUtils
 from utilsNoT import str_display
 
-#import config
-#import DistanceUtils
-#from MergePredictedContactMatrix import MergeAndSaveOneProtein
-#import getopt
-
 def Usage():
     	print 'python BatchEvaluateContactAccuracy.py poteinListFile PKL_folder ground_truth_folder [fileSuffix]'
-	print '  This script evaluates contact prediction accuracy for a list of proteins in their predicted dist or contact matrix files '
-    	print '  PKL_folder: a folder containing predicted distance/orientation matrix files named after XXX.predictedDistMatrix.pkl'
-    	print '     A predicted distance matrix file contains a tuple of at least 6 items: name, sequence, predicted distance prob matrix, predicted contact prob matrix, labelWeights, labelDistribution'
-	print '  ground_truth_folder: folder for native distance/orientation matrix files'
-    	print '  fileSuffix: suffix for native dist/contact matrix file: .atomDistMatrix.pkl or .native.pkl (default)'
-	print '		two different suffices represent two different formats'
+	print '\tThis script evaluates contact prediction accuracy for a list of proteins in their predicted dist or contact matrix files'
+	print '\tproteinListFile: a file for a list of proteins, each in one row'
+    	print '\tPKL_folder: a folder containing predicted distance/orientation matrix files ending with .predictedDistMatrix.pkl'
+    	print '\t\tA predicted distance matrix file contains a tuple of at least 6 items: name, sequence, predicted distance prob matrix, predicted contact prob matrix, labelWeights, labelDistribution'
+	print '\t\tMeanwhile, predicted distance prob matrix and predicted contact prob matrix are python dict()'
+	print '\tground_truth_folder: folder for native distance/orientation matrix files'
+    	print '\tfileSuffix: suffix for native dist/contact matrix file: .atomDistMatrix.pkl or .native.pkl (default)'
+	print '\t\tThe suffix represents a specific format'
 
 def main(argv):
 
