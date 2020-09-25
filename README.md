@@ -5,7 +5,7 @@
 
 RaptorX predicts protein contact/distance/orientation and local structure properties (e.g, secondary structure and phi/psi angles) by deep convolutional residual networks.
 It also builds the 3D model of a protein sequence using predicted distance/orientation and phi/psi angles.
-It is mainly tested on the Linux distribution CentOS (>6.0) and Python 2.7, but you may also run it if you already have Python 3 installed. 
+It is mainly tested on the Linux distribution CentOS (>6.0) with bash shell and Python 2.7, but you may also run it if you already have Python 3 installed. 
 A version directly supporting Python 3 and tensorflow will be available in a few months. 
 This package is also incorporated into our protein structure prediction web server at http://raptorx.uchicago.edu/, which is publicly available for both academia and industry.
 If you only want to predict structures for several protein sequences, it is more convenient to use our web server instead of installing this package.
@@ -191,41 +191,20 @@ without requiring you to manually copy data among different machines. This will 
 
 ## Setup and export of environment variables ##
 
-1) ModelingHome: This is where the whole package is installed, e.g., $HOME/RaptorX-3DModeling.
-Please add ModelingHome to the environmental variable PYTHONPATH.
-
-2) DistFeatureHome=$ModelingHome/BuildFeatures/ for generating MSAs and input features.
-
-3) DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/ for predicting local structure properties such as Phi/Psi angles.
-
-4) DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/ for contact/distance/orientation prediction. 
-
-5) DistanceFoldingHome=$ModelingHome/Folding/ for building 3D models
-
-6) Make sure that the setup in $ModelingHome/raptorx-external.sh is correct and then add ". $ModelingHome/raptorx-external.sh " to the .bashrc file in your own Linux account to set enviromental variables related to MSA generation.
+1) Set the environemntal variable ModelingHome to the install folder of the whole package, e.g., $HOME/RaptorX-3DModeling.
+2) Add ". $ModelingHome/raptorx-path.sh" to the .bashrc file in your own Linux account.
+3) Revise the setting in $ModelingHome/raptorx-external.sh and add ". $ModelingHome/raptorx-external.sh " to the .bashrc file in your own Linux account to set environmental variables related to external databases and tools.
 
 Supposing that the RaptorX-3DModeling package is located at $HOME/RaptorX-3DModeling/,
 below is an example configuration that can be pasted to the .bashrc file (when your account is using the bash shell).
 
+export CUDA_ROOT=/usr/local/cuda/
 export ModelingHome=$HOME/RaptorX-3DModeling/
-
+. $ModelingHome/raptorx-path.sh
 . $ModelingHome/raptorx-external.sh
 
-export DistFeatureHome=$ModelingHome/BuildFeatures/
-
-export DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/
-
-export DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/
-
-export DistanceFoldingHome=$ModelingHome/Folding/
-
-export PYTHONPATH=$ModelingHome:$PYTHONPATH
-
-export PATH=$ModelingHome/bin:$PATH
-
-export CUDA_ROOT=/usr/local/cuda/
-
-If you are using csh shell, you may add a similar setting to the file .cshrc in your home directory.
+If your account uses csh shell, you may add a similar setting to the file .cshrc in your home directory. 
+The settings in raptorx-external.sh and raptorx-path.sh shall also be revised according to the grammar of csh.
 
 ## Detailed Usage
 
