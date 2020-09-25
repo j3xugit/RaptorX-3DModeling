@@ -25,7 +25,7 @@ function Usage
         echo "	-c: the number of CPUs to be used, default $numAllowedJobs"
         echo "	-d: the folder for result saving, default current work directory"
 	echo "	-f: a filter string for the selection of intial models to be relaxed, default empty, i.e., all PDB files in initModelFolder will be relaxed"
-	echo "  -a: alpha value for DFIRE potential, default 1.61. If > 20, a random value will be used"
+	echo "	-a: alpha value for DFIRE potential, default 1.61. If > 20, a random value will be used"
 }
 
 while getopts ":c:d:f:a:" opt; do
