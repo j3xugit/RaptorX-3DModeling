@@ -51,10 +51,11 @@ if [ ! -d $savefolder ]; then
 	mkdir -p $savefolder
 fi
 
-python $program -a CbCb -s $savefolder $distFile 
 target=`basename $distFile | cut -f1 -d'.' `
-#echo $target
-rawFile=$savefolder/${target}.pairPotential.DFIRE.18.1.61.Wt4D.pkl
 potFile=$savefolder/${target}.pairPotential.DFIRE16.pkl
+python $program -a CbCb -s $potFile $distFile 
 
-mv $rawFile $potFile
+#echo $target
+#rawFile=$savefolder/${target}.pairPotential.DFIRE.18.1.61.Wt4D.pkl
+
+#mv $rawFile $potFile
