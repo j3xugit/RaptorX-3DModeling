@@ -69,7 +69,7 @@ function Usage
 	echo "		This allows you to run contact/distance/orientation prediction on one machine and 3D model building on another machine without manually copying data among machines"
 	echo "		RaptorX-3DModeling (at least the folding module) shall be installed at the remote account and some environmental variables shall be set"
 	echo "		Please make sure that you are able to scp/ssh/rsync to this remote account without password"
-	echo "	-t: the type of machine for folding jobsing"
+	echo "	-t: the type of machine for folding module"
 	echo "		0 (default) for self-determination, usually assuming the machine is a multi-CPU Linux workstation without GNU parallel and thus, may not work for you"
 	echo "		1 for a mulit-CPU Linux computer with GNU parallel installed"
 	echo "		2 for a slurm cluster with homogeneous nodes"
