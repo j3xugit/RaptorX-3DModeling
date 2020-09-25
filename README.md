@@ -199,8 +199,11 @@ Supposing that the RaptorX-3DModeling package is located at $HOME/RaptorX-3DMode
 below is an example configuration that can be pasted to the .bashrc file (when your account is using the bash shell).
 
 export CUDA_ROOT=/usr/local/cuda/
+
 export ModelingHome=$HOME/RaptorX-3DModeling/
+
 . $ModelingHome/raptorx-path.sh
+
 . $ModelingHome/raptorx-external.sh
 
 If your account uses csh shell, you may add a similar setting to the file .cshrc in your home directory. 
