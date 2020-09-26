@@ -258,7 +258,7 @@ def load_hhm(hhmfile):
 			i = end
 			continue
 			
-		if row.startswith('>' + protein['name']) and (not protein.has_key('sequence')):
+		if row.startswith('>' + protein['name']) and (content[i-1].strip() != 'SEQ') and (not protein.has_key('sequence')):
 			## read the primary sequence in the following lines
 			start = i+1
 			end = i+1
