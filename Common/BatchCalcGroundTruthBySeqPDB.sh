@@ -7,13 +7,9 @@ fi
 
 RESDIR=`pwd`
 
-numAllowedJobs=15
-host=`hostname`
-if [ "$host" == "raptorx10.uchicago.edu" ]; then
-	numAllowedJobs=150
-fi
+numAllowedJobs=`nproc --all`
 
-function Usage
+function Usage 
 {
 	echo $0 "[ -n numJobs | -d ResDir ] proteinListFile SeqDir PDBDir"
 	echo "	This script calculates the property/distance/orientation ground truth by sequence and structure file"
@@ -44,7 +40,7 @@ while getopts ":n:d:" opt; do
 done
 shift $((OPTIND -1))
 
-if [ $# -lt 3 ]; then
+if [ $# -ne 3 ]; then
 	Usage
 	exit 1
 fi
@@ -57,13 +53,13 @@ fi
 
 SEQDIR=$2
 if [ ! -d $SEQDIR ]; then
-	echo "ERROR: invalid seq folder $SEQDIR"
+	echo "ERROR: invalid protein seq folder $SEQDIR"
 	exit 1
 fi
 
 PDBDIR=$3
 if [ ! -d $PDBDIR ]; then
-	echo "ERROR: invalid folder for structure files $PDBDIR"
+	echo "ERROR: invalid folder for protein structure files $PDBDIR"
 	exit 1
 fi
 
