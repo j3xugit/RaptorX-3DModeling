@@ -154,6 +154,5 @@ fi
 ## remove the remote work dir
 ssh -o StrictHostKeyChecking=no $RemoteAccount "rm -rf $RemoteWorkDir"
 if [ $? -ne 0 ]; then
-        echo "ERROR: failed to delete $RemoteWorkDir at $RemoteAccount!"
-        exit 1
+        echo "WARNING: failed to delete $RemoteWorkDir at $RemoteAccount!"
 fi
