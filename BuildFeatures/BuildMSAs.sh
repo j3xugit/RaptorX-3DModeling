@@ -37,7 +37,7 @@ ResultDir=`pwd`
 MSAmode=25
 numCPUs=5
 
-function Usage
+function Usage 
 {
 	echo $0 "[ -d ResultDir | -m MSAmethod | -t SeqDB4Threading | -h SeqDB4HHMSA | -j SeqDB4Jackhmmer | -c numCPUs ] seqFile"
 	echo "	This script generates MSAs and features for threading and contact/distance prediction using HHblits and Jackhmmer"
@@ -60,7 +60,7 @@ function Usage
 while getopts ":m:d:t:h:j:c:" opt; do
         case ${opt} in
                 t )
-                  DB4Thread=$OPTARG
+                  DB4Thread=`readlink -f $OPTARG`
                   ;;
                 m )
                   MSAmode=$OPTARG
@@ -69,10 +69,10 @@ while getopts ":m:d:t:h:j:c:" opt; do
                   ResultDir=$OPTARG
                   ;;
                 h )
-                  DB4HHMSA=$OPTARG
+                  DB4HHMSA=`readlink -f $OPTARG`
                   ;;
                 j )
-                  DB4Jack=$OPTARG
+                  DB4Jack=`readlink -f $OPTARG`
                   ;;
 		c )
 		  numCPUs=$OPTARG
