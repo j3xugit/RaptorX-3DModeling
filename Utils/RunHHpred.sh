@@ -21,11 +21,11 @@ fi
 
 DB=$PDB70HHM
 
-function Usage
+function Usage 
 {
-        echo $0 "[-i nIterations | -e evalue | -m maxneff | -n numCPUs | -d DB | -s savefolder ] seqFile"
+        echo $0 "[-i nIterations | -e evalue | -m maxneff | -n numCPUs | -d DB | -s savefolder ] inFile"
 	echo "	This script builds an .hhm file for query sequence and then searches it against an HHM database (PDB70 by default) downloaded from http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/"
-	echo "	seqFile: a protein seq file in FASTA format, ending with .seq or .fasta"
+	echo "	inFile: a protein seq file in FASTA format, ending with .seq or .fasta, or an MSA file ending with .a3m or an HHM file ending with .hhm"
 	echo "	-d: the template database to be searched by HHblits, default $DB"
 	echo "	-i: the number of iterations searched by hhblits for MSA generation, default $numIterations"
 	echo "	-m: maximum neff value used by hhblits for MSA generation, default $neffmax"
@@ -34,7 +34,7 @@ function Usage
 	echo "	-s: the folder for result saving, default current work directroy"
 }
 
-while getopts ":i:n:e:m:s:" opt; do
+while getopts ":i:n:e:m:s:d:" opt; do
         case ${opt} in
                 i )
                   numIterations=$OPTARG
@@ -77,15 +77,29 @@ if [ ! -f $seqFile ]; then
 	exit 1
 fi
 
-if [[ $seqFile == *.fasta ]]; then
-        seqName=`basename $seqFile .fasta `
-else
-        seqName=`basename $seqFile .seq `
-fi
-
 if [ ! -d $ResDir ]; then
 	mkdir -p $ResDir
 fi
+
+hhmNeeded=0
+if [[ $seqFile == *.fasta ]]; then
+        seqName=`basename $seqFile .fasta `
+	hhmNeeded=1
+
+elif [[ $seqFile == *.a3m ]]; then
+	seqName=`basename $seqFile .a3m`
+	hhmake -i $seqFile -o $ResDir/$seqName.hhm
+
+elif [[ $seqFile == *.hhm ]]; then
+	seqName=`basename $seqFile .hhm`
+	if [ ! -f $ResDir/$seqName.hhm ]; then
+		cp $seqFile $ResDir/$seqName.hhm
+	fi
+else
+        seqName=`basename $seqFile .seq `
+	hhmNeeded=1
+fi
+
 
 cmd=`readlink -f $0`
 cmdDir=`dirname $cmd`
@@ -95,11 +109,13 @@ if [ ! -f ${DB}_hhm.ffindex ]; then
 	exit 1
 fi
 
-## generate .hhm file
-$cmdDir/BuildHHM.sh -i $numIterations -n $numCPUs -e $Evalue -m $neffmax -s $ResDir $seqFile
-if [ $? -ne 0 ]; then
-	echo "ERROR: failed to generate a .hhm file for $seqFile"
-	exit 1
+if [ $hhmNeeded -eq 1 ]; then
+	## generate .hhm file
+	$cmdDir/BuildHHM.sh -i $numIterations -n $numCPUs -e $Evalue -m $neffmax -s $ResDir $seqFile
+	if [ $? -ne 0 ]; then
+		echo "ERROR: failed to generate a .hhm file for $seqFile"
+		exit 1
+	fi
 fi
 hhmfile=$ResDir/$seqName.hhm
 
