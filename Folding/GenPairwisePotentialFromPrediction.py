@@ -38,17 +38,23 @@ def Usage():
 	print '  -l, -u: min and max potential for one pair of atoms, default values: -30 and 30, respectively. They are only used for potential check and do not impact the real potential values'
 
 #check value of one potential matrix
-def CheckPotentialValues(m=None, minPotential=-30., maxPotential=30):
-	if m is None:
-		return
+def CheckPotentialValues(m, minPotential=-40., maxPotential=40):
+	assert m is not None
+
+	mWithoutDiag = m[~np.eye(m.shape[0],dtype=bool)].reshape(m.shape[0],-1)
+	if not np.isfinite(mWithoutDiag).all():
+		print 'ERROR: the potential matrix may contain an NaN or infinite value'
+		return False
+
 	numLabels = m.shape[2]
 	for i in np.arange(numLabels):
 		## here we only check the potential values of two residues with sequence separation >=k
-		potential = np.triu(m[:, :, i], k=5)
+		potential = np.triu(m[:, :, i], k=4)
 		if np.amax(potential ) > maxPotential:
                         print 'WARNING: possibly too big potential value: ', np.amax(potential), ' for label ', i
                 if np.amin(potential ) < minPotential:
                         print 'WARNING: possibly too small potential value: ', np.amin(potential), ' for label ', i
+	return True
 
 ## this function is obsolete
 ## predDistMatrix is the predicted distance distribution by a deep learning model.

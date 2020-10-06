@@ -49,6 +49,8 @@ def WriteSplineConstraints(constraints, savefile=None, savefolder4histfile=None)
 	expVal = 0.
 	weight = 1.
 
+	numIgnored = 0
+
 	potStrs = []
 	for constraint in constraints:
 		## write histogram to histfile
@@ -56,6 +58,11 @@ def WriteSplineConstraints(constraints, savefile=None, savefolder4histfile=None)
 		labelName, _, _ = config.ParseResponse(response)
 		x = constraint['x']
 		y = constraint['y']
+		if not np.isfinite(y).all():
+			print 'WARNING: ignore one constraint since it may have an NaN or infinite value:', constraint
+			numIgnored += 1
+			continue
+			
 		atomNums = [ str(i) for i in constraint['atomNums'] ]
 		atomNumStr = '-'.join(atomNums)
 
@@ -77,6 +84,10 @@ def WriteSplineConstraints(constraints, savefile=None, savefolder4histfile=None)
 		potStr = ' '.join(potStrList)
 
 		potStrs.append(potStr)
+
+	if numIgnored > 100:
+		print 'ERROR: too many constraints are ignored:', numIgnored
+		exit(1)
 
 	if len(potStrs)>0:
         	with open(savefile, 'w') as fh:

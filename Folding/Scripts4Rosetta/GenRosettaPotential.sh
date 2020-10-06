@@ -146,4 +146,4 @@ rm -f $PairPotentialFile
 rm -f $PhiPsiPotentialFile
 #rm -f $propertyFile2
 
-date; echo "The resultant Rosetta constraint file is at $cstfile and one folder may also be created to hold all Rosetta constraints."
+date; echo "The resultant Rosetta constraint files are saved at at $cstfile"
