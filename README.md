@@ -77,7 +77,7 @@ Needed for train and run deep learning models; install by running "conda install
 Please make sure that the CUDA toolkits and CUDNN library have been installed on your machine with GPUs.
 Set the environment variable CUDA_ROOT to where cuda is installed, e.g., export CUDA_ROOT=/usr/local/cuda. 
 Make sure that the header and lib64 files of CUDNN are in CUDA_ROOT/include and CUDA_ROOT/lib64, respectively. 
-We have tested Theano 1.04, CUDA 8 to 10.1 and CUDNN 7.5 to 7.6.4 . Other versions of CUDA and CUDNN may also work.
+We have tested Theano 1.04, CUDA 8 to 10.1 and CUDNN 7 to 7.6.5 . Other versions of CUDA and CUDNN may also work.
 
 3) shared_ndarray (https://github.com/crowsonkb/shared_ndarray.git)
 
