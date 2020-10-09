@@ -20,7 +20,7 @@ If you only want to predict structures for several protein sequences, it is more
 
 ### How to set up? ###
 
-Download this package by "git clone" and install it anywhere in your own account, e.g., $HOME/RaptorX-3DModeling/.
+Download this package by "git clone https://github.com/j3xugit/RaptorX-3DModeling.git" and save it anywhere in your own account, e.g., $HOME/RaptorX-3DModeling/.
 It contains the following files and subfolders (and a few others):
 
 BuildFeatures/
@@ -33,6 +33,7 @@ Folding/
 
 params/
 
+raptorx-path.sh
 raptorx-external.sh
 
 README.md
@@ -76,7 +77,7 @@ Needed for train and run deep learning models; install by running "conda install
 Please make sure that the CUDA toolkits and CUDNN library have been installed on your machine with GPUs.
 Set the environment variable CUDA_ROOT to where cuda is installed, e.g., export CUDA_ROOT=/usr/local/cuda. 
 Make sure that the header and lib64 files of CUDNN are in CUDA_ROOT/include and CUDA_ROOT/lib64, respectively. 
-(Theano 1.0 works with CUDA 10.0 and cudnn 7.6. Other versions of CUDA and CUDNN may also work)
+We have tested Theano 1.04, CUDA 8 to 10.1 and CUDNN 7.5 to 7.6.4 . Other versions of CUDA and CUDNN may also work.
 
 3) shared_ndarray (https://github.com/crowsonkb/shared_ndarray.git)
 
@@ -208,6 +209,7 @@ export ModelingHome=$HOME/RaptorX-3DModeling/
 
 If your account uses csh shell, you may add a similar setting to the file .cshrc in your home directory. 
 The settings in raptorx-external.sh and raptorx-path.sh shall also be revised according to the grammar of csh.
+Most shell scripts in this package have been tested with bash shell.
 
 ## Detailed Usage
 
