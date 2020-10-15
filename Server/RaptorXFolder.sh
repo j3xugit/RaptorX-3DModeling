@@ -10,13 +10,6 @@ export ModelingHome=`dirname $cmdDir`
 . $ModelingHome/raptorx-path.sh
 . $ModelingHome/raptorx-external.sh
 
-#export DistFeatureHome=$ModelingHome/BuildFeatures/
-#export DL4DistancePredHome=$ModelingHome/DL4DistancePrediction4/
-#export DL4PropertyPredHome=$ModelingHome/DL4PropertyPrediction/
-#export DistanceFoldingHome=$ModelingHome/Folding/
-#export PYTHONPATH=$ModelingHome:$PYTHONPATH
-#export PATH=$ModelingHome/bin:$PATH
-
 outDir=`pwd`
 GPU=-1
 MSAmethod=9
@@ -62,8 +55,9 @@ function Usage
 	echo "	-n: the number of decoys to be generated, default $numDecoys"
 	echo "		When <=0, folding will not be done, only contact/distance/orientation will be predicted"
 	echo "	-r: 0 for fold only and 1 for fold+relax, default $runningMode"
-	echo "		The relaxation step is very time-consuming. When the protein is large (>600AAs), it may take a few hours to relax one initial 3D model on a single CPU"
-	echo "		if you do fold first and later would like to do relaxation, several shell scripts in RaptorX-3DModeling/Folding/Script4Rosetta/ can be used" 
+	echo "		Relax may remove some steric clashes and optimize side-chain atoms"
+	echo "		The relax step is time-consuming. When the protein is large (>600AAs), it may take a few hours to relax one 3D model on a single CPU"
+	echo "		if you do fold first and later would like to relax, several shell scripts in RaptorX-3DModeling/Folding/Script4Rosetta/ can be used" 
 	echo " "
 	echo "	-R: run the folding module at a remote account specified by this option, e.g., raptorx@raptorx3.uchicago.edu:Work4Server/. By default, folding is done locally."
 	echo "		This allows you to run contact/distance/orientation prediction on one machine and 3D model building on another machine without manually copying data among machines"

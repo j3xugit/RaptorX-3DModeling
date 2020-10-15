@@ -108,8 +108,15 @@ do
 		fi
 
 		ln -s $srcDir/${target}.a2m
-		ln -s $srcDir/${target}.extraCCM.pkl
-		ln -s $srcDir/${target}.inputFeatures.pkl
+		for i in $srcDir/${target}.*.pkl
+		do
+			if [ ! -f $i ]; then
+				continue
+			fi
+			ln -s $i
+		done
+		#ln -s $srcDir/${target}.extraCCM.pkl
+		#ln -s $srcDir/${target}.inputFeatures.pkl
 	done
 	cd $currDir
 
