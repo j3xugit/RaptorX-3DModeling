@@ -265,8 +265,13 @@ def CheckData(metaData):
 		print 'Great: all files for basic input features and ground truth exist'
 		return
 
-	print 'ERROR: some files for the dataset do not exist. The first 10 are: '
-	print missing[:10]
+	missingFile = 'missing.txt'
+	print 'ERROR: some files are missing. Please see ', missingFile
+
+	allMissing='\n'.join(missing)
+	with open(missingFile, 'a') as fh:
+		fh.write('*************************************************************************\n')
+		fh.write(allMissing)
 
 if len(sys.argv) < 3:
 	Usage()

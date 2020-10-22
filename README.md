@@ -182,13 +182,15 @@ without requiring you to manually copy data among different machines. This will 
 
 ## References
 
-1. Distance-based protein folding powered by deep learning. PNAS, August 2019. A 2-page abstract also appeared at RECOMB2019 in April 2019.
+1. improved protein structure prediction by deep learning irrespective of co-evolution information. https://www.biorxiv.org/content/10.1101/2020.10.12.336859v1
 
-2. Analysis of distance-based protein structure prediction by deep learning in CASP13. PROTEINS, 2019.
+2. Distance-based protein folding powered by deep learning. PNAS, August 2019. A 2-page abstract also appeared at RECOMB2019 in April 2019.
 
-3. Accurate De Novo Prediction of Protein Contact Map by Ultra-Deep Learning Model. PLoS CB, Jan 2017
+3. Analysis of distance-based protein structure prediction by deep learning in CASP13. PROTEINS, 2019.
 
-4. Folding Membrane Proteins by Deep Transfer Learning. Cell Systems, September 2017.
+4. Accurate De Novo Prediction of Protein Contact Map by Ultra-Deep Learning Model. PLoS CB, Jan 2017
+
+5. Folding Membrane Proteins by Deep Transfer Learning. Cell Systems, September 2017.
 
 ## Setup and export of environment variables ##
 
