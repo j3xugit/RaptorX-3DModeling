@@ -1,0 +1,10 @@
+0	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.104484450.relaxed.104484.pdb	1	7.142857003837566	14	1.96
+1	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.124104926.relaxed.124104.pdb	2	3.6144579040033427	6	1.66
+2	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.135593753.relaxed.135593.pdb	4	0.90497735994473	2	2.21
+3	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.110334126.relaxed.110334.pdb	3	0.7936507996578126	2	2.52
+4	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.104730800.relaxed.104730.pdb	5	0	1	0.0
+5	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.104927395.relaxed.104927.pdb	6	0	1	0.0
+6	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.105038074.relaxed.105038.pdb	7	0	1	0.0
+7	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.105140664.relaxed.105140.pdb	8	0	1	0.0
+8	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.105255823.relaxed.105255.pdb	9	0	1	0.0
+9	example//1pazA_OUT/1pazA-RelaxResults/1pazA.fold.105487969.relaxed.105487.pdb	10	0	1	0.0
