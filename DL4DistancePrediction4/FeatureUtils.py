@@ -47,16 +47,48 @@ def LoadFeaturePKL(name, location='Feature4Train_2017_E001_PKL/', modelSpecs=Non
 			exit(1)
 		feature['rawCCM'] = CCMpredUtils.ExpandMatrix(extra['rawCCM'], seqLen)
 
-	if bUseFullCov or bUseFullMI:
+	if bUseFullMI:
 		alnfile = os.path.join(location, name + '.a2m')
 		if not os.path.isfile(alnfile):
 			print 'ERROR: the a2m file does not exist: ', alnfile
 			exit(1)
-	if bUseFullCov:
-		feature['fullCov'] = MSAUtils.CalcPairMatrixFromFile(alnfile)
-	if bUseFullMI:
 		feature['fullMI'] = MSAUtils.CalcPairMatrixFromFile(alnfile, matrixType='mi')
 
+	if bUseFullCov:
+		covfile = os.path.join(location, name + '.cov.pkl')
+		if not os.path.isfile(covfile):
+			alnfile = os.path.join(location, name + '.a2m')
+			if not os.path.isfile(alnfile):
+				print 'ERROR: the a2m file does not exist:', alnfile
+				exit(1)
+			feature['fullCov'] = MSAUtils.CalcPairMatrixFromFile(alnfile)
+		else:
+			with open(covfile, 'rb') as fh:
+				feature['fullCov'] = cPickle.load(fh)
+
+	## check to see if we shall load up ESM information
+	layers = config.ParseESMmode(modelSpecs)
+	if layers is not None:
+		esmfile = os.path.join(location, name + '.esm2.pkl')
+		if not os.path.isfile(esmfile):
+			print 'ERROR: the file for ESM information does not exist: ', esmfile
+			exit(1)
+
+		with open(esmfile, 'rb') as fh:
+			esm = cPickle.load(fh)
+
+		esmfeature = []
+		for layer in layers:
+			layer4key = layer % (esm['numModelLayers'] + 1 )
+			if not esm.has_key(layer4key):
+				print 'ERROR: attention weight for layer ', layer, ' requested but not available in ', esmfile
+				exit(1)
+			esmfeature.append(esm[layer4key])
+
+		feature['ESM'] = np.concatenate(esmfeature, axis=2)
+
+		#print 'ESM feature has shape', feature['ESM'].shape
+	
 	return feature
 
 
