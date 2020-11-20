@@ -127,9 +127,9 @@ currDir=`pwd`
 cd $ResDir
 for i in $targets
 do
-	ln -s $ResDir/feat_${i}_contact/${i}.inputFeatures.pkl
-	ln -s $ResDir/feat_${i}_contact/${i}.extraCCM.pkl
-	ln -s $ResDir/feat_${i}_contact/${i}.a2m
+	ln -s feat_${i}_contact/${i}.inputFeatures.pkl
+	ln -s feat_${i}_contact/${i}.extraCCM.pkl
+	ln -s feat_${i}_contact/${i}.a2m
 done
 
 cd $currDir

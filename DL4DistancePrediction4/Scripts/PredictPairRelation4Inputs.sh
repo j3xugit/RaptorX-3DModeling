@@ -22,9 +22,12 @@ ModelName=""
 
 alignmentType=0
 
+## the amount of memory to be preallocated
+GPUmemory=0
+
 function Usage 
 {
-  	echo $0 " [ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -T alignmentType | -a aliStr | -t tplStr ] proteinListFile inputFolder1 [inputFolder2 inputFolder3 ...]"
+  	echo $0 " [ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -p preallocate_memory | -T alignmentType | -a aliStr | -t tplStr ] proteinListFile inputFolder1 [inputFolder2 inputFolder3 ...]"
 	echo "	This script predicts inter-atom distance/orientation for a list of proteins, each with a set of feature files"
 	echo "	proteinList: a file (ending with .list) for a list of protein names, each in one row"
 	echo "	inputFolder: one or multiple folders containing features for proteins in proteinList"
@@ -45,10 +48,12 @@ function Usage
 	echo " "
 	echo "	-d: the folder for result saving, default Dist-ListName-InputName-ModelName where ListName and InputName are the base names of proteinList and inputFolder"
 	echo "	-g: -1 (select a GPU automatically), 0-3, default $GPU"
-        echo "		Users shall make sure that at least one GPU has enough memory for the prediction job. Otherwise it may crash itself or other jobs"
+        echo "		Users shall make sure that at least one GPU has enough memory for the prediction job. Otherwise it may crash itself or other jobs"	
+	echo "	-p: the amount of GPU memory to be preallocated, default $GPUmemory"
+	echo "		if 0, no preallocation; if between 0 and 1, it is the fraction of memory to be preallocated; if >1, it is the actual amount of memory to be allocated"
 }
 
-while getopts ":f:m:d:g:T:a:t:" opt; do
+while getopts ":f:m:d:g:p:T:a:t:" opt; do
         case ${opt} in
                 f )
                   DeepModelFile=`readlink -f $OPTARG`
@@ -61,6 +66,9 @@ while getopts ":f:m:d:g:T:a:t:" opt; do
                   ;;
                 g )
                   GPU=$OPTARG
+                  ;;
+	        p )
+                  GPUmemory=$OPTARG
                   ;;
 		T )
 		  alignmentType=$OPTARG
@@ -185,7 +193,7 @@ else
         GPU=cuda$GPU
 fi
 
-THEANO_FLAGS=blas.ldflags=,device=$GPU,floatX=float32,dnn.include_path=${CUDA_ROOT}/include,dnn.library_path=${CUDA_ROOT}/lib64 $command
+THEANO_FLAGS=blas.ldflags=,device=$GPU,floatX=float32,gpuarray.preallocate=$GPUmemory,dnn.include_path=${CUDA_ROOT}/include,dnn.library_path=${CUDA_ROOT}/lib64 $command
 if [ $? -ne 0 ]; then
 	echo "ERROR: failed to run $command"
 	exit 1
