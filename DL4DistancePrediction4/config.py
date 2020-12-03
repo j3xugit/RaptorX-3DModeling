@@ -136,6 +136,10 @@ def ParseAttentionMode(modelSpecs):
 		UseFC = False
 	return (UseAvg, UseMax, UseFC)
 
+def ParseESMmode(modelSpecs):
+	# To implement
+	return None
+
 def GetBoundingBoxOffset(modelSpecs):
 	if not modelSpecs.has_key('boundingBoxOffset'):
 		return None
