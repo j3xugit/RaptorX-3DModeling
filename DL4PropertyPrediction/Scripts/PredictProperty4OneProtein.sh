@@ -83,7 +83,7 @@ fi
 
 #echo "Running $DL4PropertyPredHome/Scripts/PredictPropertyLocal.sh -f $DeepModelFile -m $ModelName -d $ResultDir -g $GPU $inputFeature"
 
-$DL4PropertyPredHome/Scripts/PredictPropertyLocal.sh -f $DeepModelFile -m $ModelName -d $ResultDir -g $GPU $inputFeature
+bash $DL4PropertyPredHome/Scripts/PredictPropertyLocal.sh -f $DeepModelFile -m $ModelName -d $ResultDir -g $GPU $inputFeature
 if [ $? -ne 0 ]; then
 	echo "ERROR: failed to predict property for $target using information in $rootDir"
 	exit 1
