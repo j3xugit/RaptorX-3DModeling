@@ -5,14 +5,58 @@ if [ -z "$DistFeatureHome" ]; then
         exit 1
 fi
 
+numAllowedJobs=4
+numCPUs=2
+
+DBID=2017
+DB="uniclust30_2017_10/uniclust30"
+
+ResultDir=""
+
 if [ $# -lt 2 ]; then
-	echo "$0 proteinListFile SeqDir [DBID]"
+	echo "$0 [ -d DBID | -n numJobs | -c numCPUs | -o ResultDir ] proteinListFile SeqDir"
 	echo "	This script builds MSAs for a list of proteins, one MSA for each protein"
+	echo "	proteinListFile: a file for a list of proteins, each in one row"
 	echo "	SeqDir: the folder for input sequence files"
 	echo "	DBID: identification of uniclust database version: 2015, 2016, 2017 (default) and 2018"
-	echo "	the resultant files will be saved to a folder named after MSA_DBID_E001"
+	echo "	numJobs: the number of protein sequences to be run simultaneously, default $numAllowedJobs"
+	echo "	numCPUs: the number of CPUs to be used for each protein sequence, default $numCPUs"
+	echo "	ResultDir: the folder for result saving"
+	echo "		by default, the resultant files will be saved to a folder MSA_DBID_E001"
 	exit 1
 fi
+
+while getopts ":o:d:c:n:" opt; do
+        case ${opt} in
+                o )
+                  ResultDir=$OPTARG
+                  ;;
+                c )
+                  numCPUs=$OPTARG
+                  ;;
+                n )
+                  numAllowedJobs=$OPTARG
+                  ;;
+		d )
+		  DBID=$OPTARG
+		  ;;
+                \? )
+                  echo "Invalid Option: -$OPTARG" 1>&2
+                  exit 1
+                  ;;
+                : )
+                  echo "Invalid Option: -$OPTARG requires an argument" 1>&2
+                  exit 1
+                  ;;
+        esac
+done
+shift $((OPTIND -1))
+
+if [ $# -ne 2 ]; then
+        Usage
+        exit 1
+fi
+
 
 list=$1
 
@@ -22,14 +66,6 @@ if [ ! -d $SEQDIR ]; then
 	exit 1
 fi
 
-DBID=2017
-if [ $# -eq 3 ]; then
-	DBID=$3
-fi
-
-numCPUs=2
-
-DB="uniclust30_2017_10/uniclust30"
 if [ $DBID == "2015" ]; then
 	DB="uniprot20_2015_06/uniprot20"
 elif [ $DBID == "2016" ]; then
@@ -39,7 +75,12 @@ elif [ $DBID == "2018" ]; then
 fi
 DB=$DistFeatureHome/HHblitsWrapper/databases/${DB}
 
-MSADir=MSA_${DBID}_E001
+if [ -z $ResultDir ]; then
+	MSADir=MSA_${DBID}_E001
+else
+	MSADir=$ResultDir
+fi
+
 if [ ! -d $MSADir ]; then
 	mkdir -p $MSADir
 fi
@@ -50,7 +91,6 @@ if [ ! -x $program ]; then
 	exit 1
 fi
 
-numAllowedJobs=12
 keywords=`basename $program`
 myself=`basename $0 `
 
@@ -60,7 +100,7 @@ do
         do
                 ## check the number of running jobs
                 numRunningJobs=`ps -x | grep ${keywords} | grep -v ${myself} | wc -l`
-                if [ $numRunningJobs -lt $numAllowedJobs ]; then
+                if [ $numRunningJobs -le $numAllowedJobs ]; then
 			$program -d $DB -c $numCPUs -o $MSADir/ $SEQDIR/$i.fasta &
                         break
                 else

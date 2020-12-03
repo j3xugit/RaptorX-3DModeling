@@ -117,6 +117,36 @@ def ParseExtraCCMmode(modelSpecs):
 
 	return bUseCCMFnorm, bUseCCMsum, bUseCCMraw, bUseFullMI, bUseFullCov
 
+def ParseESMmode(modelSpecs):
+	if not modelSpecs.has_key('ESM'):
+		return None
+
+	if modelSpecs['ESM'] == '':
+		return None
+
+	if not isinstance(modelSpecs['ESM'], str):
+		return [ np.int32(modelSpecs['ESM']) ]
+
+	import re
+	#layers = [ np.int32(field) for field in re.split(',| ', modelSpecs['ESM']) ]
+	layers = []
+	segments = re.split(',| ', modelSpecs['ESM'])
+	for seg in segments:
+		fields = seg.split('t')
+		if len(fields) == 1:
+			layers.append(np.int32(fields[0]))
+		elif len(fields) == 2:
+			start = np.int32(fields[0])
+			end = np.int32(fields[1])
+			layers.extend( np.arange(start, end+1) )
+		else:
+			print 'ERROR: inocrrect format for ESM option:', seg
+			exit(1)
+			
+	if not bool(layers):
+		return None
+	return layers
+
 def ParseAttentionMode(modelSpecs):
 	if not modelSpecs.has_key('Attention'):
 		return None

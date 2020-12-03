@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [[ -z "${DL4PropertyPredHome}" ]]; then
+if [ -z "${DL4PropertyPredHome}" ]; then
         echo "ERROR: please set environmental variable DL4PropertyPredHome to the install folder of DL4PropertyPrediction"
         exit 1
 fi
@@ -82,7 +82,7 @@ if [ ! -d $ResultDir ]; then
 	mkdir -p $ResultDir
 fi
 
-if [[ -z "${CUDA_ROOT}" ]]; then
+if [ -z "${CUDA_ROOT}" ]; then
         echo "ERROR: please set environmental variable CUDA_ROOT"
         exit 1
 fi

@@ -29,12 +29,12 @@ if [ $# -ge 4 ]; then
 	MSA=$4
 fi
 
-if [[ -z "$DL4PropertyPredHome" ]]; then
+if [ -z "$DL4PropertyPredHome" ]; then
         echo "ERROR: please set environmental variable DL4PropertyPredHome to the instllation directory of DL4PropertyPrediction"
         exit 1
 fi
 
-if [[ -z "$DistFeatureHome" ]]; then
+if [ -z "$DistFeatureHome" ]; then
         echo "ERROR: please set environmental variable DistFeatureHome to the instllation directory of BuildFeatures"
         exit 1
 fi
