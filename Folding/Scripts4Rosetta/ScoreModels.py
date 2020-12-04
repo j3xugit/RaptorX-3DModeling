@@ -99,8 +99,8 @@ def main(argv):
                 print 'alpha for DFIRE is', param4Potential
 
                 ## create a CST folder and generate the CST file
-                if os.path.isdir('/dev/shm'):
-                        cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0], dir='/dev/shm')
+                if os.path.isdir('/tmp'):
+                        cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0], dir='/tmp')
                 else:
                         cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0])
 

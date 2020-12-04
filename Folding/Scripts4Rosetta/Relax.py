@@ -154,10 +154,10 @@ def main(argv):
 		LargeRAMs = ['raptorx6', 'raptorx7', 'raptorx8', 'raptorx9', 'raptorx10']
 
                 if machine in LargeRAMs:
-                        cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0], dir='/dev/shm')
+                        cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0], dir=savefolder)
 
-                elif seqLen<400 and os.path.isdir('/dev/shm'):
-                        cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0], dir='/dev/shm')
+                elif seqLen<400 and os.path.isdir(savefolder):
+                        cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0], dir=savefolder)
                 else:
                         cstfolder = tempfile.mkdtemp(prefix='cstDir4'+os.path.basename(pairFile).split('.')[0])
 
