@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 list=$1
 TPLDIR=PDB25-7952-TPL

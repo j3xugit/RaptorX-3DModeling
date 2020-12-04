@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DeepModelFile=$DL4DistancePredHome/params/ModelFile4PairwisePred.txt
 DefaultModel4FM=EC47C37C19CL99S35V2020MidModels

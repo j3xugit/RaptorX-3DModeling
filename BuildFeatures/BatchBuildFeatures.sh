@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 numAllowedJobs=3
 ResDir=`pwd`

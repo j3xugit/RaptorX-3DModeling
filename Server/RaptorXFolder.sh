@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cmd=`readlink -f $0`
 cmdDir=`dirname $cmd`

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## this script generates an old tpl file from an .a3m  or .tgt file and a pdb file
 ## the tpl file is named after proteinName.tpl

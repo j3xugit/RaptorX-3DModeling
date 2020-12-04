@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ -z "${ModelingHome}" ]]; then
 	echo "ERROR: please set the environmental variable ModelingHome to the install folder of RaptorX-3DModeling"

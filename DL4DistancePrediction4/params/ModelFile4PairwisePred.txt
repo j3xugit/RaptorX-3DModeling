@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #V3ModelDir=/mnt/data/RaptorXCommon/TrainTestData/Distance_Contact_TrainData/Jinbo_Folder/result4HBBeta/V3Models/
 V3ModelDir=$DL4DistancePredHome/models/

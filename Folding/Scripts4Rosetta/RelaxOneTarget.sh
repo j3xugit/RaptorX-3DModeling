@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #if [[ -z "${DistanceFoldingHome}" ]]; then
 #        echo "ERROR: Please set the environmental variable DistanceFoldingHome to installation folder of Folding/"

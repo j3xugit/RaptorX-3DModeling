@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ -z "${DistFeatureHome}" ]]; then
         echo "ERROR: Please set environmental variable DistFeatureHome to the installation folder of BuildFeatures "

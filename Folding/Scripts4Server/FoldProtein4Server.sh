@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 2 ]; then
 	echo $0 "targetName infolder [numJobsPerModel (5, 10 or 20, default 20) ]"

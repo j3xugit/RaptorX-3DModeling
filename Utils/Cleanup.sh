@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 WorkDir1=Work4Server-raptorx/
 WorkDir2=Work4Server-raptorx2/

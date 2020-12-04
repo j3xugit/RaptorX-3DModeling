@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ -z "${DL4PropertyPredHome}" ]]; then
         echo "ERROR: please set environmental variable DL4PropertyPredHome to the installation folder of DL4PropertyPrediction"

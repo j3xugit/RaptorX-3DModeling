@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## this script generates old tpl files for a list of proteins
 if [ $# -lt 3 ]; then

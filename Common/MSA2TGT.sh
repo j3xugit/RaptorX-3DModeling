@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## this script generates a tgt file from an .hhm or .a3m file
 ## the tgt file is named after proteinName.tgt.pkl, which is supposed to be compatible with the old TGT file

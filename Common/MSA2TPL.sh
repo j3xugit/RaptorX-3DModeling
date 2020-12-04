@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## this script generates a tpl file from an .hhm or .a3m file plus a pdb file
 ## the tpl file is named after proteinName.tpL.pkl, which is supposed to be compatible with the old TPL file

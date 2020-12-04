@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #modelName=EC47C31C16CL99PDB30V2020CbCbTwoRModels
 modelName=EC47C31C16CL99PDB30CbCbTwoRV7C
