@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 1 ]; then
 	echo $0 "targetName (e.g. T0859-D1) [ DataName (e.g., CASP12DM) ]"

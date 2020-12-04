@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 atomType="CbCb+CaCa+NO+TwoROri"
 

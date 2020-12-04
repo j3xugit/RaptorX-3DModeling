@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 4 ]; then
 	echo "$0 alignmentListFile alignDir queryPDBDir templatePDBDir [ResultDir]"

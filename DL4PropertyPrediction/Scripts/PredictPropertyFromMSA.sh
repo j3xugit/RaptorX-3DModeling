@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## this script predicts properties from an .hhm or .a3m file
 

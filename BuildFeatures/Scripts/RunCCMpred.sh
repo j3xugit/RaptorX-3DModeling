@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if ! type "nvidia-smi" > /dev/null; then
 	echo "ERROR: looks like GPU not installed on this machine"

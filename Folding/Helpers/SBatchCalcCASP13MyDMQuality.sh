@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 1 ]; then
 	echo $0 metaFolder [NativeDir [ DM2MyDM_file [flag] ] ]

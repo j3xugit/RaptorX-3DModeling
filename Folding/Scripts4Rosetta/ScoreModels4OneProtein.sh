@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 alpha=1.61
 savefolder=`pwd`

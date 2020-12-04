@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 nativeDir=CASP13DM-Native
 mappingFile=CASP13FM2MyDM.txt

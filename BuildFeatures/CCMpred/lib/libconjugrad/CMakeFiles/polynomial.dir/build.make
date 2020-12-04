@@ -31,7 +31,7 @@ cmake_force:
 # Set environment variables for the build.
 
 # The shell in which to execute make rules.
-SHELL = /bin/sh
+SHELL = /bin/bash
 
 # The CMake executable.
 CMAKE_COMMAND = /home/jinbo/cmake-3.6.0-rc4-Linux-x86_64/bin/cmake

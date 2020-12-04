@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #ModelDir=/mnt/data/RaptorXCommon/TrainTestData/ProteinProperty_Project/Jinbo_Folder/result4property/Models/
 ModelDir=$DL4PropertyPredHome/models/

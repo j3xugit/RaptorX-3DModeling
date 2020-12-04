@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 2 ]; then
         echo $0 "targetModel modelFolder1 modelFolder2 ..."

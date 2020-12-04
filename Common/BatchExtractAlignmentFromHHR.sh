@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 E="0.00001,0.001,0.1"
 MaxSeqID=0.4

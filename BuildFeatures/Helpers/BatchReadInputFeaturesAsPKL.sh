@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ -z "${DL4DistancePredHome}" ]]; then
         echo "ERROR: Please set environmental variable DL4DistancePredHome to the installation folder of DL4DistancePrediction4 "

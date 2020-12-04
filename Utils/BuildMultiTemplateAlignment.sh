@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## this is a wrapper for building sequence to multiple-template alignment 
 

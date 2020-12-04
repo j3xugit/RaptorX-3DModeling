@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 4 ]; then
 	echo $0 "seqFile outDir No3Dmodel A3Minput [gpu (default -1)] "

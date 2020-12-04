@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 avefolder=`pwd`
 w4phipsi=1

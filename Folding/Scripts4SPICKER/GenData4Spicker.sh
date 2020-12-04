@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 3 ]; then
 	echo $0 targetList SeqDir MetaFolder [cutoff-method]

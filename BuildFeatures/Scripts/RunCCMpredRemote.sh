@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 outDir=`pwd`
 gpu=-1

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -lt 2 ]; then
 	echo "Usage: $0 modelListFile nativePDB [ID (default RX)], where ID can be used to identify one method"
