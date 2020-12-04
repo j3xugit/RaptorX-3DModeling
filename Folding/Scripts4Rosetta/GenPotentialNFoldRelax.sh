@@ -81,7 +81,7 @@ if [ ! -f $pairMatrixFile ]; then
 fi
 
 propertyFile=$3
-if [ "$propertyFile" == "cst" ]; then
+if [ "$propertyFile" = "cst" ]; then
         ## treat pairMatrixFile as a constraint file instead of a PKL file
         cstfile=$pairMatrixFile
 else
