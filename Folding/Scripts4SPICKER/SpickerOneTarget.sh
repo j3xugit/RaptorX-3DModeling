@@ -2,7 +2,7 @@
 
 savefolder=''
 
-function Usage 
+Usage () 
 {
         echo $0 "[ -s | -d savefolder ] SeqFile ModelFolder1 ModelFolder2 ModelFolder3 ..."
 	echo "	-s: when specified, select models by energy "

@@ -15,7 +15,7 @@ HHbin=$HHDIR/bin
 
 DB=""
 
-function Usage
+Usage ()
 {
         echo $0 "[-i nIterations | -d DB | -e evalue | -m maxneff | -n numCPUs | -s savefolder ] seqFile"
 	echo "	This script builds an MSA and a profile HMM for input protein sequence file, which then can be used for homology search, protein threading and protein structure property prediction"

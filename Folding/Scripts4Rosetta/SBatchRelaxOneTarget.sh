@@ -10,7 +10,7 @@ fi
 filter=''
 partition=contrib-cpu
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -f filter4initiModels | -d savefolder | -q partition ] initModelFolder predictedPairInfo predictedPropertyInfo"
 	echo "	This script generates Rosetta constraints from predicted inter-residue relationship and PhiPsi angles and then relax 3D models"

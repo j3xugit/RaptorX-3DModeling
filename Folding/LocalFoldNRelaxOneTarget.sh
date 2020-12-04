@@ -12,7 +12,7 @@ machineType=0
 cmd=`readlink -f $0`
 cmdDir=`dirname $cmd`
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -d savefolder | -n numModels | -r runningMode | -a alpha | -t MachineType | -p ] seqFile predictedPairInfo [predictedPropertyInfo]"
 	echo "	This script folds a protein using local CPUs"

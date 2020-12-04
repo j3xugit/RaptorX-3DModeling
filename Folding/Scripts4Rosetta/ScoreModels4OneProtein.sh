@@ -3,7 +3,7 @@
 alpha=1.61
 savefolder=`pwd`
 
-function Usage 
+Usage () 
 {
 	echo $0 "[-a alpha | -d savefolder ] MyDMName MetaFolder cstFolder [propertyFolder]"
 	echo "	This script scores unrelaxed models of one protein"

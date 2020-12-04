@@ -9,7 +9,7 @@ RESDIR=`pwd`
 
 numAllowedJobs=`nproc --all`
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -n numJobs | -d ResDir ] proteinListFile SeqDir PDBDir"
 	echo "	This script calculates the property/distance/orientation ground truth by sequence and structure file"

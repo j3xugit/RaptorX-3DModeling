@@ -11,7 +11,7 @@ MultiTempDir=$RXHOME/MultiTemp_Package
 PDBDIR=$RXHOME/databases/pdb_BC100
 TPLDIR=$RXHOME/databases/TPL_BC100
 
-function Usage {
+Usage () {
 	echo "$0 [ -p PDBDir | -t TPLDir ] tgtFile tplListFile aliFolder"
 	echo "	This script builds a multi-template alignment for a query sequence"
 	echo "	tgtFile: a .tgt file for the query sequence"

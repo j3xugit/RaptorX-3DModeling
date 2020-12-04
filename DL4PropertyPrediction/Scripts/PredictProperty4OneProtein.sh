@@ -10,7 +10,7 @@ ModelName=PhiPsiSet10820Models
 GPU=-1
 ResultDir=`pwd`
 
-function Usage {
+Usage () {
         echo $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu ] proteinName inputFolder"
         echo "	This script predicts properties for a set of proteins using a local machine with GPUs"
  	echo "	inputFolder: a folder containing files for property prediction, e.g., 1pazA_OUT/. It shall contain subfolders proteinName_contact/ and proteinName_thread/, which in turn shall contain .a3m or .hhm files"

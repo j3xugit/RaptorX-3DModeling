@@ -24,7 +24,7 @@ ModelName=""
 
 alignmentType=0
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu ] MSAfile"
 	echo Or $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -T alignmentType ] MSAfile aliFile/aliFolder tplFile/tplFolder"

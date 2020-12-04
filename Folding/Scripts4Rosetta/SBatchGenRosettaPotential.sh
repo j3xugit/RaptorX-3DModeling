@@ -15,7 +15,7 @@ else
 	QUEUE=contrib-cpu
 fi
 
-function Usage {
+Usage () {
 	echo "$0 [-a Alpha | -c distCutoff | -t TopRatio | -w w4phipsi | -s seqSep | -d savefolder | -q jobqueue ] targetListFile folder4predictedPairInfo folder4predictedProperty "
 	echo "	This script runs on a slurm cluster to generate rosetta constraints for a list of proteins from predicted distance/orientation and property information"
 	echo "	targetListFile: a file for a list of protein names, each in one row"

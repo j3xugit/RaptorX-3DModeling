@@ -4,7 +4,7 @@ outDir=`pwd`
 gpu=-1
 RemoteAccount="raptorx7.uchicago.edu"
 
-function Usage
+Usage ()
 {
 	echo $0 "[ -d outDir | -g gpu | -r remoteAccount ] a3mFile"
 	echo "	This script runs CCMpred on a GPU of a remote machine"

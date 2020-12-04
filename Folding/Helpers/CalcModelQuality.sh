@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function Usage 
+Usage () 
 {
 	echo "$0 [ -f filter4decoyName | -d savefolder ] ModelFolder NativeFile"
 	echo "	This script calculates the quality of 3D models of a one protein. Please make sure DeepScore is searchable by your bin path"

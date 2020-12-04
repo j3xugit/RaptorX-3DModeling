@@ -29,7 +29,7 @@ aliStr=""
 
 alignmentType=0
 
-function Usage 
+Usage () 
 {
         echo $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -s MSA_mode | -M ] proteinName inputFolder"
         echo Or $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -s MSA_mode | -M | -T alignmentType ] proteinName inputFolder aliFile/aliFolders tplFile/tplFolder"

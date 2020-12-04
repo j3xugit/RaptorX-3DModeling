@@ -25,7 +25,7 @@ alignmentType=0
 ## the amount of memory to be preallocated
 GPUmemory=0
 
-function Usage 
+Usage () 
 {
   	echo $0 " [ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -p preallocate_memory | -T alignmentType | -a aliStr | -t tplStr ] proteinListFile inputFolder1 [inputFolder2 inputFolder3 ...]"
 	echo "	This script predicts inter-atom distance/orientation for a list of proteins, each with a set of feature files"

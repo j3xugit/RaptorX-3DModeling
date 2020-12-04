@@ -2,7 +2,7 @@
 
 savefolder=`pwd`
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -d savefolder ] predictedDistProbMatrix"
 	echo "	This script derives distance potential from predicted dist information for protein threading"

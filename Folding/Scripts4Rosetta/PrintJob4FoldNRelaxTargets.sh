@@ -7,7 +7,7 @@ UsePerturbation=false
 
 alpha=1.61
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -d savefolder | -n numModels | -r runningMode| -a alpha | -p ] proteinListFile inFileDir cstFolder [propertyFolder]"
 	echo "	This script prints out folding/relaxation jobs for a list of proteins"

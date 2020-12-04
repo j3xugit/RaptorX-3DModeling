@@ -25,7 +25,7 @@ maxLen2BeFolded=1050
 
 printContactInCASPOnly=0
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -o outDir | -g gpu | -m MSAmethod | -n numDecoys | -r runningMode | -R remoteAccountInfo | -t machineType | -l maxLen2BeFolded | -c ] inputFile"
 	echo "	This script predicts angle/contact/distance/orientation of a protein and optionally folds it"

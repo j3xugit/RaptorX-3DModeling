@@ -7,7 +7,7 @@ runningMode=0
 alpha=1.61
 UsePerturbation=false
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -d savefolder | -n numModels | -r runningMode | -a alpha | -p] inFile predictedPairInfo [predictedPropertyInfo]" 
 	echo "	This script prints out a list of jobs to be submitted to a cluster or GNU parallel"

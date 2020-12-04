@@ -18,7 +18,7 @@ w4phipsi=1
 ## 
 querySeqFolder=/dev/null
 
-function Usage {
+Usage () {
 	echo "$0 [ -A atomType | -a alpha | -c distCutoff | -t TopRatio | -w w4phipsi | -s seqSep | -q querySeqFolder | -d savefolder ] targetListFile folder4predictedPairInfo folder4predictedProperty "
 	echo "	This script generates rosetta constraints for a list of proteins from predicted distance/orientation and property information"
         echo "	targetListFile: a file for a list of protein names, each in one row"

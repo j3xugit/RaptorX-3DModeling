@@ -21,7 +21,7 @@ fi
 
 DB=$PDB70HHM
 
-function Usage 
+Usage () 
 {
         echo $0 "[-i nIterations | -e evalue | -m maxneff | -n numCPUs | -d DB | -s savefolder ] inFile"
 	echo "	This script builds an .hhm file for query sequence and then searches it against an HHM database (PDB70 by default) downloaded from http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/"

@@ -19,7 +19,7 @@ ModelName=""
 
 alignmentType=0
 
-function Usage 
+Usage () 
 {
 	echo $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -T alignmenType ] inputFeature_PKL"
 	echo Or $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu | -T alignmenType ] inputFeature_PKL aliFile/aliFolder tplFile/tplFolder"
