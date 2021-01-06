@@ -17,7 +17,7 @@ ModelName=PhiPsiSet10820Models
 GPU=-1
 ResultDir=`pwd`
 
-function Usage
+function Usage 
 {
         echo $0 "[ -f DeepModelFile | -m ModelName | -d ResultDir | -g gpu ] MSAfile"
 	echo "	This script predicts protein local structure properties from a .hhm or .a3m file"

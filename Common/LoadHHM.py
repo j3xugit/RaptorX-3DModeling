@@ -164,6 +164,8 @@ def load_hhm(hhmfile):
 
 	with open(hhmfile, 'r') as fh:
 		content = [ r.strip() for r in list(fh) ]
+	fh.close()
+
 	if not bool(content):
 		print 'ERROR: empty profileHMM file: ', hhmfile
 		exit(1)

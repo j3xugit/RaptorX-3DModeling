@@ -13,7 +13,7 @@ function Usage
 	echo "	proteinListFile: a file for a list of proteins, each in one row"
 	echo "	inFileDir: folder for input sequence file in FASTA format or PDB file for an initial model"
 	echo "	cstFolder: folder for predicted distance/orientation files (in PKL format) or folder for Rosetta constraint files with suffix .pairPotential4Rosetta.SPLINE.txt"
-	echo "  propertyFolder: if not specified, cstFolder shall be a folder for Rosetta constraints. Otherwise cstFolder and propertyFolder are folders for predicted distance and property files, respectively"
+	echo "	propertyFolder: if not specified, cstFolder shall be a folder for Rosetta constraints. Otherwise cstFolder and propertyFolder are folders for predicted distance and property files, respectively"
 	echo "	-d: the folder for result saving, default current work directory"
         echo "	-n: the number of models to be generated, default $numModels"
 	echo "	-c: the number of CPUs to be used simultaneously, default $numCPUs"
@@ -125,8 +125,8 @@ do
         fi
 
 	if $UsePerturbation; then
-		$cmdDir/FoldNRelaxOneTarget.sh -d $ResDir -n $numModels -c $numCPUs -r $runningMode -p $seqFile $cstFolder/${target}.pairPotential4Rosetta.SPLINE.txt $propertyFile
+		$cmdDir/FoldNRelaxOneTarget.sh -d $ResDir -n $numModels -c $numCPUs -r $runningMode -p $seqFile $cstFile $propertyFile
 	else
-		$cmdDir/FoldNRelaxOneTarget.sh -d $ResDir -n $numModels -c $numCPUs -r $runningMode $seqFile $cstFolder/${target}.pairPotential4Rosetta.SPLINE.txt $propertyFile
+		$cmdDir/FoldNRelaxOneTarget.sh -d $ResDir -n $numModels -c $numCPUs -r $runningMode $seqFile $cstFile $propertyFile
 	fi
 done

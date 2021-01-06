@@ -18,7 +18,7 @@ if [ $# -lt 2 ]; then
 	echo "	This script builds MSAs for a list of proteins, one MSA for each protein"
 	echo "	proteinListFile: a file for a list of proteins, each in one row"
 	echo "	SeqDir: the folder for input sequence files"
-	echo "	DBID: identification of uniclust database version: 2015, 2016, 2017 (default) and 2018"
+	echo "	DBID: identification of uniclust database version: 2015, 2016, 2017 (default), 2018 and 2020"
 	echo "	numJobs: the number of protein sequences to be run simultaneously, default $numAllowedJobs"
 	echo "	numCPUs: the number of CPUs to be used for each protein sequence, default $numCPUs"
 	echo "	ResultDir: the folder for result saving"
@@ -72,6 +72,8 @@ elif [ $DBID == "2016" ]; then
 	DB="uniprot20_2016_05/uniprot20"
 elif [ $DBID == "2018" ]; then
 	DB="uniclust30_2018_08/uniclust30"
+elif [ $DBID == "2020" ]; then
+	DB="uniclust30/uniclust30"
 fi
 DB=$DistFeatureHome/HHblitsWrapper/databases/${DB}
 
