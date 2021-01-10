@@ -1,32 +1,39 @@
 #!/bin/sh
 
 savefolder=''
+selectModel=false
+QA=false
 
 function Usage 
 {
-        echo $0 "[ -s | -d savefolder ] SeqFile ModelFolder1 ModelFolder2 ModelFolder3 ..."
-	echo "	-s: when specified, select models by energy "
+        echo $0 "[ -s | -a | -d savefolder ] SeqFile ModelFolder1 ModelFolder2 ModelFolder3 ..."
+	echo "	-s: when specified, select models by energy, default no"
+	echo "	-a: when specified, assign model quality, default no"
 	echo "	-d: the folder for result saving, default bname-SpickerResults/ in current work directory where bname is the base name of the first modelFolder"
 	echo "	SeqFile: the primary seq file in FASTA format"
 	echo "	ModelFolder: the folder for decoys to be clustered"
 }
 
-if [[ -z "$ModelingHome" ]]; then
-	echo "ERROR: please set environmental variable ModelingHome to the install folder of RaptorX-3DModeling"
-	exit 1
+cmd=`readlink -f $0`
+cmdDir=`dirname $cmd`
+#cmdDir=$DistanceFoldingHome/Scripts4SPICKER
+
+if [ "$selectModel" = true ]; then
+	if [[ -z "$DistanceFoldingHome" ]]; then
+		echo "ERROR: please set environmental variable DistanceFoldingHome to the install folder of Folding/"
+		exit 1
+	fi
+
 fi
 
-if [[ -z "$DistanceFoldingHome" ]]; then
-	echo "ERROR: please set environmental variable DistanceFoldingHome to the install folder of Folding/"
-	exit 1
-fi
-
-selectModel=false
-while getopts ":sd:" opt; do
+while getopts ":sad:" opt; do
        case ${opt} in
         s )
           selectModel=true
           ;;
+	a )
+	  QA=true
+	  ;;
 	d )
 	  savefolder=$OPTARG
 	  ;;
@@ -53,7 +60,6 @@ if [ ! -f $seqFile ]; then
 	exit 1
 fi
 
-cmdDir=$DistanceFoldingHome/Scripts4SPICKER
 program=$cmdDir/GenInputInfo4SPICKER.py
 if [ ! -f $program ]; then
 	echo "ERROR: invalid program $program"
@@ -119,8 +125,18 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-QualityAssessProgram=${ModelingHome}/Utils/AssessModelByRef.sh
+if [ "$QA" == false ]; then	
+	echo "Do not assign model quality to the selected 3D models in $savefolder"
+	exit 0
+fi
 
+echo "Assigning model quality..."
+if [[ -z "$ModelingHome" ]]; then
+	echo "ERROR: please set environmental variable ModelingHome to the install folder of RaptorX-3DModeling"
+	exit 1
+fi
+
+QualityAssessProgram=${ModelingHome}/Utils/AssessModelByRef.sh
 for i in $savefolder/*_center?.pdb
 do
 	$QualityAssessProgram $i $modelFolders &

@@ -199,7 +199,7 @@ if [ $? -ne 0 ]; then
 fi
 
 ## Cluster all decoys
-$DistanceFoldingHome/Scripts4SPICKER/SpickerOneTarget.sh -d $outDir/${target}_OUT/${target}-SpickerResults $seqFile $decoyFolder
+$DistanceFoldingHome/Scripts4SPICKER/SpickerOneTarget.sh -a -d $outDir/${target}_OUT/${target}-SpickerResults $seqFile $decoyFolder
 if [ $? -ne 0 ]; then
         echo "ERROR: failed to run $DistanceFoldingHome/Scripts4SPICKER/SpickerOneTarget.sh -d $outDir/${target}_OUT/${target}-SpickerResults $seqFile $decoyFolder"
         exit 1
