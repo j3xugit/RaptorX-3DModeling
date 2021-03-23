@@ -129,7 +129,7 @@ If GNU parallel is not installed, you may still run folding jobs using other scr
 
 ## Install deep learning models for contact/distance/orientation/angle prediction ##
 
-The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). They are available at http://raptorx.uchicago.edu/download/ . Later we will also upload these model files to a public data repository website.
+The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). You may download them at https://data.mendeley.com/datasets/5dj63g5xdv/1 or http://raptorx.uchicago.edu/download/ .
 
 1) The package RXDeepModels4DistOri-FM.tar.gz has 6 models for contact/distance/orientation/ prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4DistancePredHome/models/
 
