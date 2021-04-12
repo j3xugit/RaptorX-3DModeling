@@ -15,7 +15,7 @@ iteration="3"
 bitscore="0"
 threshold="0.001"
 
-function usage
+function usage 
 {
 	echo $0 "[-n iter | -b bitsco | -t thres | -o out_root | -c numCPUs | -d uniref90] input_fasta"
 	echo "	-n: the number of iterations (default $iteration)"
@@ -117,7 +117,8 @@ eval "$(conda shell.bash hook)"
 #source activate EVcoupling
 source activate evfold
 if [ $? -ne 0 ]; then
-	conda activate EVcoupling
+	#conda activate EVcoupling
+	conda activate evfold
 fi
 
 #evcouplings_runcfg $tmp_root/$relnam.config_file
