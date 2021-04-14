@@ -185,7 +185,7 @@ without requiring you to manually copy data among different machines. This will 
 
 ## References
 
-1. improved protein structure prediction by deep learning irrespective of co-evolution information. https://www.biorxiv.org/content/10.1101/2020.10.12.336859v1
+1. improved protein structure prediction by deep learning irrespective of co-evolution information. Nature Machine Intelligence, 2021. Also available at https://www.biorxiv.org/content/10.1101/2020.10.12.336859v1
 
 2. Distance-based protein folding powered by deep learning. PNAS, August 2019. A 2-page abstract also appeared at RECOMB2019 in April 2019.
 
