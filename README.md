@@ -127,13 +127,13 @@ Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.s
 Run "which parallel" to see if GNU parallel is available or not.
 If GNU parallel is not installed, you may still run folding jobs using other scripts.
 
-## Install deep learning models for contact/distance/orientation/angle prediction ##
+## Install deep learning models for contact/distance/orientation/angle/SS prediction ##
 
 The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). You may download them at https://data.mendeley.com/datasets/5dj63g5xdv/1 or http://raptorx.uchicago.edu/download/ .
 
 1) The package RXDeepModels4DistOri-FM.tar.gz has 6 models for contact/distance/orientation/ prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4DistancePredHome/models/
 
-1) The package RXDeepModels4Property.tar.gz has 3 deep models for Phi/Psi angle prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4PropertyPredHome/models/
+1) The package RXDeepModels4Property.tar.gz has 7 deep models for Phi/Psi angle, Secondary Structure (SS) and Solvent Accessibility (ACC) prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4PropertyPredHome/models/ . By default the package will just predict Phi/Psi angles. If you also want to predict SS and ACC, please use "-m AllSeqSet10820Models" in running the script programs in DL4PropertyPrediction/Scripts/
 
 ## Basic Usage
 
