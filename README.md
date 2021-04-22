@@ -127,9 +127,10 @@ Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.s
 Run "which parallel" to see if GNU parallel is available or not.
 If GNU parallel is not installed, you may still run folding jobs using other scripts.
 
-## Install deep learning models for contact/distance/orientation/angle/SS prediction ##
+## Install deep learning models for contact/distance/orientation/angle/SS/ACC prediction ##
 
-The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). You may download them at https://data.mendeley.com/datasets/5dj63g5xdv/1 or http://raptorx.uchicago.edu/download/ .
+The deep learning model files for contact/distance/orientation prediction are big (each 100-200M). 
+You may download them at https://doi.org/10.5281/zenodo.4710337 or http://raptorx.uchicago.edu/download/ .
 
 1) The package RXDeepModels4DistOri-FM.tar.gz has 6 models for contact/distance/orientation/ prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4DistancePredHome/models/
 
