@@ -60,7 +60,7 @@ Install msgpack-python by "conda install -c anaconda msgpack-python"; it may not
 
 2) Biopython (https://biopython.org/)
 
-Needed for both contact/distance/orientation predicton and 3D model building.
+Needed for both contact/distance/orientation predicton and 3D structure model building.
 
 Install by running "pip install biopython==1.76". Note that a newer version may not work with Python 2.7.
 
@@ -78,6 +78,8 @@ Please make sure that the CUDA toolkits and CUDNN library have been installed on
 Set the environment variable CUDA_ROOT to where cuda is installed, e.g., export CUDA_ROOT=/usr/local/cuda. 
 Make sure that the header and lib64 files of CUDNN are in CUDA_ROOT/include and CUDA_ROOT/lib64, respectively. 
 We have tested Theano 1.04, CUDA 8 to 10.1 and CUDNN 7 to 7.6.5 . Other versions of CUDA and CUDNN may also work.
+
+In principle, Theano can also run without GPUs, but some minor revisions are needed for some prediction script progtrams in this package.
 
 3) shared_ndarray (https://github.com/crowsonkb/shared_ndarray.git)
 
@@ -110,22 +112,9 @@ The sequence database for jackhmmer is uniref90.fasta, which can be downloaded f
 3) Metagenome data (optional)
 
 Download the data file metaclust_50.fasta at https://metaclust.mmseqs.org/current_release/ and install it somewhere.
+In the future, we will install much more metagenome data.
 
 4) (IMPORTANT) Revise the file RaptorX-3DModeling/raptorx-external.sh to setup the path information for the above MSA building tools and databases.
-
-## Required packages for building protein 3D models ##
-
-1) PyRosetta (http://www.pyrosetta.org/dow)
-
-Needed to fold a protein sequence from predicted distance/orientation and phi/psi angles.
-Please download the version supporting Python 2.7 and unpack it. Supposing it is located at PyRosetta4.Release.python27.linux.release-224/,
-cd to PyRosetta4.Release.python27.linux.release-224/setup/ and run "python setup.py install".
-
-2) GNU parallel (optional, but recommended for running folding jobs on a Linux workstation)
-
-Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.sh and SRunFoldNRelaxOneTarget.sh) use GNU parallel to run multiple folding jobs on one or multiple computers.
-Run "which parallel" to see if GNU parallel is available or not.
-If GNU parallel is not installed, you may still run folding jobs using other scripts.
 
 ## Install deep learning models for contact/distance/orientation/angle/SS/ACC prediction ##
 
@@ -134,7 +123,24 @@ You may download them at https://doi.org/10.5281/zenodo.4710337 or http://raptor
 
 1) The package RXDeepModels4DistOri-FM.tar.gz has 6 models for contact/distance/orientation/ prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4DistancePredHome/models/
 
-1) The package RXDeepModels4Property.tar.gz has 7 deep models for Phi/Psi angle, Secondary Structure (SS) and Solvent Accessibility (ACC) prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4PropertyPredHome/models/ . By default the package will just predict Phi/Psi angles. If you also want to predict SS and ACC, please use "-m AllSeqSet10820Models" in running the script programs in DL4PropertyPrediction/Scripts/
+2) The package RXDeepModels4Property.tar.gz has 7 deep models for Phi/Psi angle, Secondary Structure (SS) and Solvent Accessibility (ACC) prediction. Unpack it and place all the deep model files (ending with .pkl) at $DL4PropertyPredHome/models/ . By default the package will just predict Phi/Psi angles. If you also want to predict SS and ACC, please use "-m AllSeqSet10820Models" in running the script programs in DL4PropertyPrediction/Scripts/
+
+## Required packages for building protein 3D models from predicted information ##
+
+The below two packages are not needed if you do not want to build 3D models of a protein sequence under prediction. 
+That is, they are not needed if you just want to predict SS/ACC/angle and contact/distance/orientation. 
+
+1) PyRosetta (http://www.pyrosetta.org/dow)
+
+It is needed to build 3D models of a protein sequence from predicted distance/orientation and phi/psi angles.
+Please download the version supporting Python 2.7 and unpack it. Supposing it is located at PyRosetta4.Release.python27.linux.release-224/,
+cd to PyRosetta4.Release.python27.linux.release-224/setup/ and run "python setup.py install".
+
+2) GNU parallel (optional, but recommended for running folding jobs on a Linux workstation)
+
+Some scripts in RaptorX-3DModeling/Folding/ (e.g., ParallelFoldNRelaxOneTarget.sh and SRunFoldNRelaxOneTarget.sh) use GNU parallel to run multiple folding jobs on one or multiple computers.
+Run "which parallel" to see if GNU parallel is available or not.
+If GNU parallel is not installed, you may still run folding jobs using other scripts.
 
 ## Basic Usage
 
